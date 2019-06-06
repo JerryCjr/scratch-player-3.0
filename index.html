@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <script src="../scratch-vm/dist/web/scratch-vm.js"></script>
+    <script src="../scratch-storage/dist/web/scratch-storage.js"></script>
+    <script src="../scratch-svg-renderer/dist/web/scratch-svg-renderer.js"></script>
+    <script src="../scratch-render/dist/web/scratch-render.js"></script> -->
+    <!-- <script src="../scratch-audio/dist.js"></script> -->
+
+    <script src="./script/scratch-vm.js"></script>
+    <script src="./script/scratch-storage.js"></script>
+    <script src="./script/scratch-svg-renderer.js"></script>
+    <script src="./script/scratch-render.js"></script>
+
+    <canvas id="test" style="width: 667px; height: 375px;"></canvas>
+    <input type="file" id="file" name="file">
+    <div class="loaded"></div>
+
+    <script>
+        // These variables are going to be available in the "window global" intentionally.
+        // Allows you easy access to debug with `vm.greenFlag()` etc.
+        window.devicePixelRatio = 1;
+
+        const dragThreshold = 3;
+
+        const state = {
+            mouseDown: false,
+            mouseDownTimeoutId: null,
+            mouseDownPosition: null,
+            isDragging: false,
+            dragOffset: null,
+            dragId: null,
+            colorInfo: null,
+            question: null
+        };
+
+        var canvas = document.getElementById('test');
+        var render = new ScratchRender(canvas);
+        var vm = new VirtualMachine();
+        var storage = new ScratchStorage();
+        // console.log(AudioEngine);
+        // var audioEngine = new AudioEngine();
+
+        vm.attachStorage(storage);
+        vm.attachRenderer(render);
+        // vm.attachAudioEngine(audioEngine);
+        vm.attachV2SVGAdapter(new ScratchSVGRenderer.SVGRenderer());
+        vm.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
+
+        document.getElementById('file').addEventListener('click', e => {
+            document.body.removeChild(document.getElementById('loaded'));
+        });
+
+        document.getElementById('file').addEventListener('change', e => {
+            let reader = new FileReader();
+            let thisFileInput = e.target;
+            console.log(e);
+            console.log(e.target);
+            reader.onload = () => {
+                vm.start();
+                vm.loadProject(reader.result)
+                    .then(() => {
+                        // we add a `#loaded` div to our document, the integration suite
+                        // waits for that element to show up to assume the vm is ready
+                        // to play!
+                        const div = document.createElement('div');
+                        div.id = 'loaded';
+                        document.body.appendChild(div);
+                        console.log(vm);
+                        console.log(vm.greenFlag);
+                        vm.greenFlag(); // 执行程序
+
+                    });
+            };
+            reader.readAsArrayBuffer(thisFileInput.files[0]);
+        });
+
+        function getEventXY(e) {
+            if (e.touches && e.touches[0]) {
+                return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            } else if (e.changedTouches && e.changedTouches[0]) {
+                return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+            }
+            return { x: e.clientX, y: e.clientY };
+        }
+
+        function attachMouseEvents(canvas) {
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            document.addEventListener('touchmove', onMouseMove);
+            document.addEventListener('touchend', onMouseUp);
+            canvas.addEventListener('mousedown', onMouseDown);
+            canvas.addEventListener('touchstart', onMouseDown);
+        }
+
+        function onMouseMove(e) {
+            const { x, y } = getEventXY(e);
+            const rect = canvas.getBoundingClientRect();
+            const mousePosition = [x - rect.left, y - rect.top];
+
+            if (state.mouseDown && !state.isDragging) {
+                const distanceFromMouseDown = Math.sqrt(
+                    Math.pow(mousePosition[0] - state.mouseDownPosition[0], 2) +
+                    Math.pow(mousePosition[1] - state.mouseDownPosition[1], 2)
+                );
+                if (distanceFromMouseDown > dragThreshold) {
+                    cancelMouseDownTimeout();
+                    onStartDrag(...state.mouseDownPosition);
+                }
+            }
+
+            if (state.mouseDown && state.isDragging) {
+                // Editor drag style only updates the drag canvas, does full update at the end of drag
+                // Non-editor drag style just updates the sprite continuously.
+                const spritePosition = getScratchCoords(mousePosition[0], mousePosition[1]);
+                vm.postSpriteInfo({
+                    x: spritePosition[0] + state.dragOffset[0],
+                    y: -(spritePosition[1] + state.dragOffset[1]),
+                    force: true
+                });
+            }
+            const coordinates = {
+                x: mousePosition[0],
+                y: mousePosition[1],
+                canvasWidth: rect.width,
+                canvasHeight: rect.height
+            };
+            vm.postIOData('mouse', coordinates);
+        }
+
+        function onMouseUp(e) {
+            const { x, y } = getEventXY(e);
+            const rect = canvas.getBoundingClientRect();
+            const mousePosition = [x - rect.left, y - rect.top];
+            cancelMouseDownTimeout();
+            state['mouseDown'] = false;
+            state['mouseDownPosition'] = null;
+            const data = {
+                isDown: false,
+                x: mousePosition[0],
+                y: mousePosition[1],
+                canvasWidth: rect.width,
+                canvasHeight: rect.height,
+                wasDragged: state.isDragging
+            };
+            if (state.isDragging) {
+                onStopDrag(mousePosition[0], mousePosition[1]);
+            }
+            vm.postIOData('mouse', data);
+        }
+
+        function onMouseDown(e) {
+            const { x, y } = getEventXY(e);
+            const rect = canvas.getBoundingClientRect();
+            const mousePosition = [x - rect.left, y - rect.top];
+            console.log(e);
+            console.log(e.button)
+            console.log(window.TouchEvent)
+            console.log(e instanceof TouchEvent)
+            console.log(e.button === 0 || (window.TouchEvent && e instanceof TouchEvent))
+
+            if (e.button === 0 || (window.TouchEvent && e instanceof TouchEvent)) {
+                state['mouseDown'] = true;
+                state['mouseDownPosition'] = mousePosition;
+                // state['mouseDownTimeoutId'] = setTimeout(onStartDrag(mousePosition[0], mousePosition[1]), 400)
+            }
+            const data = {
+                isDown: true,
+                x: mousePosition[0],
+                y: mousePosition[1],
+                canvasWidth: rect.width,
+                canvasHeight: rect.height
+            };
+
+            vm.postIOData('mouse', data);
+            if (e.preventDefault) {
+                // Prevent default to prevent touch from dragging page
+                e.preventDefault();
+                // But we do want any active input to be blurred
+                if (document.activeElement && document.activeElement.blur) {
+                    document.activeElement.blur();
+                }
+            }
+        }
+
+        function cancelMouseDownTimeout() {
+            if (state.mouseDownTimeoutId !== null) {
+                clearTimeout(state.mouseDownTimeoutId);
+            }
+            state['mouseDownTimeoutId'] = null;
+        }
+
+        function onStartDrag(x, y) {
+            if (state.dragId) return;
+            const drawableId = render.pick(x, y);
+            if (drawableId === null) return;
+            const targetId = vm.getTargetIdForDrawableId(drawableId);
+            if (targetId === null) return;
+
+            const target = vm.runtime.getTargetById(targetId);
+
+            // Do not start drag unless in editor drag mode or target is draggable
+            if (!target.draggable) return;
+
+            // Dragging always brings the target to the front
+            target.goToFront();
+
+            // Extract the drawable art
+            const drawableData = render.extractDrawable(drawableId, x, y);
+
+            vm.startDrag(targetId);
+
+            state['isDragging'] = true;
+            state['dragId'] = targetId;
+            state['dragOffset'] = drawableData.scratchOffset;
+        }
+
+        function onStopDrag(mouseX, mouseY) {
+            const dragId = state.dragId;
+            const commonStopDragActions = () => {
+                vm.stopDrag(dragId);
+                state['isDragging'] = false;
+                state['dragOffset'] = null;
+                state['dragId'] = null;
+            };
+            commonStopDragActions();
+        }
+
+        function getScratchCoords(x, y) {
+            const nativeSize = render.getNativeSize();
+            const rect = canvas.getBoundingClientRect();
+            return [
+                (nativeSize[0] / rect.width) * (x - (rect.width / 2)),
+                (nativeSize[1] / rect.height) * (y - (rect.height / 2))
+            ];
+        }
+
+        attachMouseEvents(canvas);
+
+    </script>
+
+</body>
+
+</html>
