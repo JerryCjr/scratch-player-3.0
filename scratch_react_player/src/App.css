@@ -1,0 +1,19 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.App {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#ocanvas {
+    width: 667px;
+    height: 375px;
+    border: 1px dashed red;
+    display: block;
+    margin: 0 auto;
+}
