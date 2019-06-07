@@ -3,14 +3,37 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Awesome Scratch</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #label {
+            position: absolute;
+            right: 0;
+            top: 0;
+            display: block;
+            color: red;
+        }
+
+        #ocanvas {
+            /* width: 100vw;
+            height: 100vh; */
+            width: 667px;
+            height: 375px;
+            display: block;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -21,21 +44,42 @@
     <script src="../scratch-svg-renderer/dist/web/scratch-svg-renderer.js"></script>
     <script src="../scratch-render/dist/web/scratch-render.js"></script> -->
     <!-- <script src="../scratch-audio/dist.js"></script> -->
-
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="./script/scratch-vm.js"></script>
     <script src="./script/scratch-storage.js"></script>
     <script src="./script/scratch-svg-renderer.js"></script>
     <script src="./script/scratch-render.js"></script>
+    <script src="./script/scratch-audio.js"></script>
 
-    <canvas id="test" style="width: 667px; height: 375px;"></canvas>
-    <input type="file" id="file" name="file">
-    <div class="loaded"></div>
+    <canvas id="ocanvas"></canvas>
+    <input type="file" id="file" name="file" style="display: none;">
+    <label id="label" for="file">Select other files</label>
 
     <script>
+        function downloadScratchFile() {
+            axios
+                // .get('http://pspkamwf3.bkt.clouddn.com/scratch_resources/Party%20dodge%21%20%28contest%20entry%29%20%281%29.sb3', {
+                .get('http://pspkamwf3.bkt.clouddn.com/scratch', {
+                    // .get('http://pspkamwf3.bkt.clouddn.com/scratch_resources/Programmable%20Drum%20Kit%20%281%29.sb3', {
+                    responseType: 'blob'
+                })
+                .then((res) => {
+                    console.log(res);
+                    let reader = new FileReader();
+                    reader.onload = () => {
+                        vm.start();
+                        vm.loadProject(reader.result)
+                            .then(() => {
+                                vm.greenFlag(); // 执行程序
+                            });
+                    };
+                    reader.readAsArrayBuffer(res.data);
+                })
+        }
+
         // These variables are going to be available in the "window global" intentionally.
         // Allows you easy access to debug with `vm.greenFlag()` etc.
-        window.devicePixelRatio = 1;
-
+        window.devicePixelRatio = 3;
         const dragThreshold = 3;
 
         const state = {
@@ -44,45 +88,28 @@
             mouseDownPosition: null,
             isDragging: false,
             dragOffset: null,
-            dragId: null,
-            colorInfo: null,
-            question: null
+            dragId: null
         };
 
-        var canvas = document.getElementById('test');
+        var canvas = document.getElementById('ocanvas');
         var render = new ScratchRender(canvas);
         var vm = new VirtualMachine();
         var storage = new ScratchStorage();
-        // console.log(AudioEngine);
-        // var audioEngine = new AudioEngine();
+        var audioEngine = new AudioEngine();
 
         vm.attachStorage(storage);
         vm.attachRenderer(render);
-        // vm.attachAudioEngine(audioEngine);
+        vm.attachAudioEngine(audioEngine);
         vm.attachV2SVGAdapter(new ScratchSVGRenderer.SVGRenderer());
         vm.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
-
-        document.getElementById('file').addEventListener('click', e => {
-            document.body.removeChild(document.getElementById('loaded'));
-        });
 
         document.getElementById('file').addEventListener('change', e => {
             let reader = new FileReader();
             let thisFileInput = e.target;
-            console.log(e);
-            console.log(e.target);
             reader.onload = () => {
                 vm.start();
                 vm.loadProject(reader.result)
                     .then(() => {
-                        // we add a `#loaded` div to our document, the integration suite
-                        // waits for that element to show up to assume the vm is ready
-                        // to play!
-                        const div = document.createElement('div');
-                        div.id = 'loaded';
-                        document.body.appendChild(div);
-                        console.log(vm);
-                        console.log(vm.greenFlag);
                         vm.greenFlag(); // 执行程序
 
                     });
@@ -168,12 +195,6 @@
             const { x, y } = getEventXY(e);
             const rect = canvas.getBoundingClientRect();
             const mousePosition = [x - rect.left, y - rect.top];
-            console.log(e);
-            console.log(e.button)
-            console.log(window.TouchEvent)
-            console.log(e instanceof TouchEvent)
-            console.log(e.button === 0 || (window.TouchEvent && e instanceof TouchEvent))
-
             if (e.button === 0 || (window.TouchEvent && e instanceof TouchEvent)) {
                 state['mouseDown'] = true;
                 state['mouseDownPosition'] = mousePosition;
@@ -250,6 +271,7 @@
             ];
         }
 
+        downloadScratchFile();
         attachMouseEvents(canvas);
 
     </script>
