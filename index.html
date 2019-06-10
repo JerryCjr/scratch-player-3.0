@@ -27,6 +27,14 @@
             color: red;
         }
 
+        #detec {
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: block;
+            color: red;
+        }
+
         #ocanvas {
             /* width: 100vw;
             height: 100vh; */
@@ -34,6 +42,9 @@
             height: 375px; */
             width: 0;
             height: 0;
+            position: absolute;
+            left: 50%;
+            top: 50%;
             display: block;
             margin: 0 auto;
         }
@@ -58,7 +69,7 @@
     <canvas id="ocanvas"></canvas>
     <input type="file" id="file" name="file" style="display: none;">
     <label id="label" for="file">Select other files</label>
-    <div>
+    <div id="detec">
         <p id="J_detectRes"></p>
         <p id="J_detectData"></p>
     </div>
@@ -184,6 +195,8 @@
         var canvas = document.getElementById('ocanvas');
         canvas.style.width = canvasW + 'px';
         canvas.style.height = canvasH + 'px';
+        canvas.style.marginLeft = - canvasW / 2 + 'px';
+        canvas.style.marginTop = - canvasH / 2 + 'px';
         var render = new ScratchRender(canvas);
         var vm = new VirtualMachine();
         var storage = new ScratchStorage();
