@@ -30,8 +30,10 @@
         #ocanvas {
             /* width: 100vw;
             height: 100vh; */
-            width: 667px;
-            height: 375px;
+            /* width: 667px;
+            height: 375px; */
+            width: 0;
+            height: 0;
             display: block;
             margin: 0 auto;
         }
@@ -56,12 +58,98 @@
     <canvas id="ocanvas"></canvas>
     <input type="file" id="file" name="file" style="display: none;">
     <label id="label" for="file">Select other files</label>
+    <div>
+        <p id="J_detectRes"></p>
+        <p id="J_detectData"></p>
+    </div>
 
     <script>
+        var canvasH, canvasW;
+
+        // 判断横竖屏
+        var utils = {
+            debounce: function (func, delay) {
+                var timer = null;
+                return function () {
+                    var context = this,
+                        args = arguments;
+                    clearTimeout(timer);
+                    timer = setTimeout(function () {
+                        func.apply(context, args);
+                    }, delay);
+                }
+            }
+        }
+
+        var detectRes = document.getElementById('J_detectRes');
+        var detectData = document.getElementById('J_detectData');
+        function detectOrient() {
+            var storage = localStorage; // 不一定要使用localStorage，其他存储数据的手段都可以
+            var data = storage.getItem('J-recordOrientX');
+            var cw = document.documentElement.clientWidth;
+
+            var _Width = 0,
+                _Height = 0;
+            if (!data) {
+                sw = window.screen.width;
+                sh = window.screen.height;
+                // 2.在某些机型（如华为P9）下出现 srceen.width/height 值交换，所以进行大小值比较判断
+                _Width = sw < sh ? sw : sh;
+                _Height = sw >= sh ? sw : sh;
+                storage.setItem('J-recordOrientX', _Width + ',' + _Height);
+            } else {
+                var str = data.split(',');
+                _Width = str[0];
+                _Height = str[1];
+            }
+
+            if (cw == _Width) {
+                // 竖屏
+                detectRes.innerHTML = '检测结果是竖屏';
+            }
+            if (cw == _Height) {
+                // 横屏
+                detectRes.innerHTML = '检测结果是横屏';
+            }
+
+
+            detectData.innerHTML = 'clientWidth；' + document.documentElement.clientWidth + ';<br>'
+                + 'clientHeight；' + document.documentElement.clientHeight + ';<br>'
+                + 'screen.width：' + window.screen.width + ';<br>'
+                + 'screen.height：' + window.screen.height + ';';
+
+            let standardRatio = 667 / 375;
+
+            if (document.documentElement.clientWidth > document.documentElement.clientHeight) {
+                canvasW = document.documentElement.clientWidth;
+                canvasH = document.documentElement.clientHeight;
+            } else {
+                canvasW = document.documentElement.clientHeight;
+                canvasH = document.documentElement.clientWidth;
+            }
+
+            let actualRatio = canvasW / canvasH;
+
+            // 基于16:9基准调整
+            if (actualRatio > standardRatio) {
+                canvasH = 375
+                canvasW = canvasH * standardRatio
+            } else {
+                canvasW = 667
+                canvasH = canvasW / standardRatio
+            }
+
+            console.log(canvasW, canvasH);
+        }
+
+        // 3.函数去抖处理
+        window.onresize = utils.debounce(detectOrient, 300);
+        detectOrient();
         function downloadScratchFile() {
             axios
-                .get('http://pspkamwf3.bkt.clouddn.com/scratch_resources/Party%20dodge%21%20%28contest%20entry%29%20%281%29.sb3', {
-                // .get('http://pspkamwf3.bkt.clouddn.com/scratch', {
+                // .get('http://pspkamwf3.bkt.clouddn.com/scratch_resources/Party%20dodge%21%20%28contest%20entry%29%20%281%29.sb3', {
+                .get('./sb3/Summer Waves _ Spiral(1).sb3', {
+                    // .get('http://pspkamwf3.bkt.clouddn.com/scratch', {
                     // .get('http://pspkamwf3.bkt.clouddn.com/scratch_resources/Programmable%20Drum%20Kit%20%281%29.sb3', {
                     responseType: 'blob'
                 })
@@ -94,6 +182,8 @@
         };
 
         var canvas = document.getElementById('ocanvas');
+        canvas.style.width = canvasW + 'px';
+        canvas.style.height = canvasH + 'px';
         var render = new ScratchRender(canvas);
         var vm = new VirtualMachine();
         var storage = new ScratchStorage();
