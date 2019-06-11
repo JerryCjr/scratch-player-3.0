@@ -31,7 +31,7 @@
     <a class=dropdown>choosing an example
         <select id="select">
             <option>
-            <option value=0>Icanhelp.sb3
+            <option value=0>Icanhelp copy
             <option value=1>Party dodge! (contest entry) (1)
             <option value=2>Programmable Drum Kit (1)
             <option value=3>DIY Gobo Plush ★ Scratch Day 2019
@@ -66,6 +66,7 @@
         var detectRes = document.getElementById('J_detectRes');
         var detectData = document.getElementById('J_detectData');
         var detectWH = document.getElementById('J_detectWH');
+
         function detectOrient() {
             var storage = localStorage; // 不一定要使用localStorage，其他存储数据的手段都可以
             var data = storage.getItem('J-recordOrientX');
@@ -96,10 +97,10 @@
             }
 
 
-            detectData.innerHTML = 'clientWidth；' + document.documentElement.clientWidth + ';<br>'
-                + 'clientHeight；' + document.documentElement.clientHeight + ';<br>'
-                + 'screen.width：' + window.screen.width + ';<br>'
-                + 'screen.height：' + window.screen.height + ';';
+            detectData.innerHTML = 'clientWidth；' + document.documentElement.clientWidth + ';<br>' +
+                'clientHeight；' + document.documentElement.clientHeight + ';<br>' +
+                'screen.width：' + window.screen.width + ';<br>' +
+                'screen.height：' + window.screen.height + ';';
 
             let standardRatio = 667 / 375;
 
@@ -123,8 +124,8 @@
             }
 
             // console.log(canvasW, canvasH);
-            detectWH.innerHTML = 'canvasW: ' + canvasW + ';<br>'
-                + 'canvasH: ' + canvasH;
+            detectWH.innerHTML = 'canvasW: ' + canvasW + ';<br>' +
+                'canvasH: ' + canvasH;
         }
 
         // 3.函数去抖处理
@@ -137,7 +138,7 @@
             const value = oSel.options[oSel.selectedIndex].value;
             switch (Number(value)) {
                 case 0:
-                    filename = 'Icanhelp.sb3'
+                    filename = 'Icanhelp copy'
                     break;
                 case 1:
                     filename = 'Party dodge! (contest entry) (1)'
@@ -194,8 +195,8 @@
         var canvas = document.getElementById('ocanvas');
         canvas.style.width = canvasW + 'px';
         canvas.style.height = canvasH + 'px';
-        canvas.style.marginLeft = - canvasW / 2 + 'px';
-        canvas.style.marginTop = - canvasH / 2 + 'px';
+        canvas.style.marginLeft = -canvasW / 2 + 'px';
+        canvas.style.marginTop = -canvasH / 2 + 'px';
         var render = new ScratchRender(canvas);
         var vm = new VirtualMachine();
         var storage = new ScratchStorage();
@@ -223,11 +224,20 @@
 
         function getEventXY(e) {
             if (e.touches && e.touches[0]) {
-                return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                return {
+                    x: e.touches[0].clientX,
+                    y: e.touches[0].clientY
+                };
             } else if (e.changedTouches && e.changedTouches[0]) {
-                return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+                return {
+                    x: e.changedTouches[0].clientX,
+                    y: e.changedTouches[0].clientY
+                };
             }
-            return { x: e.clientX, y: e.clientY };
+            return {
+                x: e.clientX,
+                y: e.clientY
+            };
         }
 
         function attachMouseEvents(canvas) {
@@ -240,7 +250,10 @@
         }
 
         function onMouseMove(e) {
-            const { x, y } = getEventXY(e);
+            const {
+                x,
+                y
+            } = getEventXY(e);
             const rect = canvas.getBoundingClientRect();
             const mousePosition = [x - rect.left, y - rect.top];
 
@@ -275,7 +288,10 @@
         }
 
         function onMouseUp(e) {
-            const { x, y } = getEventXY(e);
+            const {
+                x,
+                y
+            } = getEventXY(e);
             const rect = canvas.getBoundingClientRect();
             const mousePosition = [x - rect.left, y - rect.top];
             cancelMouseDownTimeout();
@@ -296,7 +312,10 @@
         }
 
         function onMouseDown(e) {
-            const { x, y } = getEventXY(e);
+            const {
+                x,
+                y
+            } = getEventXY(e);
             const rect = canvas.getBoundingClientRect();
             const mousePosition = [x - rect.left, y - rect.top];
             if (e.button === 0 || (window.TouchEvent && e instanceof TouchEvent)) {
@@ -377,7 +396,6 @@
 
         downloadScratchFile();
         attachMouseEvents(canvas);
-
     </script>
 
 </body>
