@@ -6,49 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Awesome Scratch</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        #label {
-            position: absolute;
-            right: 0;
-            top: 0;
-            display: block;
-            color: red;
-        }
-
-        #detec {
-            position: absolute;
-            left: 0;
-            top: 0;
-            display: block;
-            color: red;
-        }
-
-        #ocanvas {
-            /* width: 100vw;
-            height: 100vh; */
-            /* width: 667px;
-            height: 375px; */
-            width: 0;
-            height: 0;
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            display: block;
-            margin: 0 auto;
-        }
-    </style>
+    <link rel="stylesheet" href="./css/index.css">
 </head>
 
 <script src="https://s0.babyfs.cn/op/f/1/f14a6b01c1264e159e5dc678071a39ea/setScreenHoriz.js"></script>
@@ -68,10 +26,22 @@
 
     <canvas id="ocanvas"></canvas>
     <input type="file" id="file" name="file" style="display: none;">
-    <label id="label" for="file">Select other files</label>
+    <label id="file-label" for="file">Select other files from filesystem</label>
+
+    <a class=dropdown>choosing an example
+        <select id="select">
+            <option value=0>Icanhelp.sb3
+            <option value=1>Party dodge! (contest entry) (1)
+            <option value=2>Programmable Drum Kit (1)
+            <option value=3>Summer Waves _ Spiral(2)
+            <option value=4>DIY Gobo Plush ★ Scratch Day 2019
+        </select>
+    </a>
+
     <div id="detec">
         <p id="J_detectRes"></p>
         <p id="J_detectData"></p>
+        <p id="J_detectWH"></p>
     </div>
 
     <script>
@@ -94,6 +64,7 @@
 
         var detectRes = document.getElementById('J_detectRes');
         var detectData = document.getElementById('J_detectData');
+        var detectWH = document.getElementById('J_detectWH');
         function detectOrient() {
             var storage = localStorage; // 不一定要使用localStorage，其他存储数据的手段都可以
             var data = storage.getItem('J-recordOrientX');
@@ -143,25 +114,50 @@
 
             // 基于16:9基准调整
             if (actualRatio > standardRatio) {
-                canvasH = 375
-                canvasW = canvasH * standardRatio
+                // canvasH = 375
+                canvasW = (canvasH * standardRatio).toFixed(2)
             } else {
-                canvasW = 667
-                canvasH = canvasW / standardRatio
+                // canvasW = 667
+                canvasH = (canvasW / standardRatio).toFixed(2)
             }
 
-            console.log(canvasW, canvasH);
+            // console.log(canvasW, canvasH);
+            detectWH.innerHTML = 'canvasW: ' + canvasW + ';<br>'
+                + 'canvasH: ' + canvasH;
         }
 
         // 3.函数去抖处理
         window.onresize = utils.debounce(detectOrient, 300);
         detectOrient();
-        function downloadScratchFile() {
+
+        var oSel = document.getElementById('select');
+        oSel.onchange = function () {
+            let filename = ''
+            const value = oSel.options[oSel.selectedIndex].value;
+            switch (Number(value)) {
+                case 0:
+                    filename = 'Icanhelp.sb3'
+                    break;
+                case 1:
+                    filename = 'Party dodge! (contest entry) (1)'
+                    break;
+                case 2:
+                    filename = 'Programmable Drum Kit (1)'
+                    break;
+                case 3:
+                    filename = 'Summer Waves _ Spiral(2)'
+                case 4:
+                    // case 4 是直接从scratch官方扒下来的 分辨率方面有问题
+                    filename = 'DIY Gobo Plush ★ Scratch Day 2019'
+                    break;
+            }
+            const path = `./sb3/${filename}.sb3`
+            downloadScratchFile(path)
+        };
+
+        function downloadScratchFile(path = './sb3/Icanhelp.sb3') {
             axios
-                // .get('http://pspkamwf3.bkt.clouddn.com/scratch_resources/Party%20dodge%21%20%28contest%20entry%29%20%281%29.sb3', {
-                .get('./sb3/Summer Waves _ Spiral(1).sb3', {
-                    // .get('http://pspkamwf3.bkt.clouddn.com/scratch', {
-                    // .get('http://pspkamwf3.bkt.clouddn.com/scratch_resources/Programmable%20Drum%20Kit%20%281%29.sb3', {
+                .get(path, {
                     responseType: 'blob'
                 })
                 .then((res) => {
