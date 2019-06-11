@@ -30,11 +30,12 @@
 
     <a class=dropdown>choosing an example
         <select id="select">
+            <option>
             <option value=0>Icanhelp.sb3
             <option value=1>Party dodge! (contest entry) (1)
             <option value=2>Programmable Drum Kit (1)
-            <option value=3>Summer Waves _ Spiral(2)
-            <option value=4>DIY Gobo Plush ★ Scratch Day 2019
+            <option value=3>DIY Gobo Plush ★ Scratch Day 2019
+            <option value=4>Summer Waves _ Spiral(2)
         </select>
     </a>
 
@@ -145,13 +146,15 @@
                     filename = 'Programmable Drum Kit (1)'
                     break;
                 case 3:
-                    filename = 'Summer Waves _ Spiral(2)'
-                case 4:
-                    // case 4 是直接从scratch官方扒下来的 分辨率方面有问题
                     filename = 'DIY Gobo Plush ★ Scratch Day 2019'
                     break;
+                case 4:
+                    // case 4 是直接从scratch官方扒下来的 分辨率方面有问题
+                    filename = 'Summer Waves _ Spiral(2)'
+                    break;
+
             }
-            const path = `./sb3/${filename}.sb3`
+            let path = `./sb3/${filename}.sb3`
             downloadScratchFile(path)
         };
 
