@@ -12,11 +12,7 @@
 <script src="https://s0.babyfs.cn/op/f/1/f14a6b01c1264e159e5dc678071a39ea/setScreenHoriz.js"></script>
 
 <body>
-    <!-- <script src="../scratch-vm/dist/web/scratch-vm.js"></script>
-    <script src="../scratch-storage/dist/web/scratch-storage.js"></script>
-    <script src="../scratch-svg-renderer/dist/web/scratch-svg-renderer.js"></script>
-    <script src="../scratch-render/dist/web/scratch-render.js"></script> -->
-    <!-- <script src="../scratch-audio/dist.js"></script> -->
+    <canvas id="ocanvas"></canvas>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="./script/scratch-vm.js"></script>
     <script src="./script/scratch-storage.js"></script>
@@ -24,7 +20,6 @@
     <script src="./script/scratch-render.js"></script>
     <script src="./script/scratch-audio.js"></script>
 
-    <canvas id="ocanvas"></canvas>
     <input type="file" id="file" name="file" style="display: none;">
     <label id="file-label" for="file">Select other files from filesystem</label>
 
@@ -36,6 +31,7 @@
             <option value=2>Programmable Drum Kit (1)
             <option value=3>DIY Gobo Plush ★ Scratch Day 2019
             <option value=4>Summer Waves _ Spiral(2)
+            <option value=5>iphonex
         </select>
     </a>
 
@@ -101,26 +97,35 @@
                 + 'screen.width：' + window.screen.width + ';<br>'
                 + 'screen.height：' + window.screen.height + ';';
 
-            let standardRatio = 667 / 375;
-
             if (document.documentElement.clientWidth > document.documentElement.clientHeight) {
-                canvasW = document.documentElement.clientWidth;
+                // canvasW = document.documentElement.clientWidth;
                 canvasH = document.documentElement.clientHeight;
             } else {
-                canvasW = document.documentElement.clientHeight;
+                // canvasW = document.documentElement.clientHeight;
                 canvasH = document.documentElement.clientWidth;
+
             }
 
-            let actualRatio = canvasW / canvasH;
+            canvasW = (canvasH / 9 * 19.5).toFixed(2);
 
-            // 基于16:9基准调整
-            if (actualRatio > standardRatio) {
-                // canvasH = 375
-                canvasW = (canvasH * standardRatio).toFixed(2)
-            } else {
-                // canvasW = 667
-                canvasH = (canvasW / standardRatio).toFixed(2)
-            }
+            console.log(canvasW)
+            console.log(canvasH)
+
+            // let standardRatio = 667 / 375;
+
+            // let actualRatio = canvasW / canvasH;
+
+            // // 基于16:9基准调整
+            // if (actualRatio > standardRatio) {
+            //     // canvasH = 375
+            //     canvasW = (canvasH * standardRatio).toFixed(2)
+            // } else {
+            //     // canvasW = 667
+            //     canvasH = (canvasW / standardRatio).toFixed(2)
+            // }
+
+            // const actualScale = canvasW / 667;
+            // console.log(actualScale)
 
             // console.log(canvasW, canvasH);
             detectWH.innerHTML = 'canvasW: ' + canvasW + ';<br>'
@@ -137,7 +142,7 @@
             const value = oSel.options[oSel.selectedIndex].value;
             switch (Number(value)) {
                 case 0:
-                    filename = 'Icanhelp.sb3'
+                    filename = 'Icanhelp'
                     break;
                 case 1:
                     filename = 'Party dodge! (contest entry) (1)'
@@ -151,6 +156,10 @@
                 case 4:
                     // case 4 是直接从scratch官方扒下来的 分辨率方面有问题
                     filename = 'Summer Waves _ Spiral(2)'
+                    break;
+                case 5:
+                    // case 4 是直接从scratch官方扒下来的 分辨率方面有问题
+                    filename = 'iphonex'
                     break;
 
             }
@@ -196,6 +205,7 @@
         canvas.style.height = canvasH + 'px';
         canvas.style.marginLeft = - canvasW / 2 + 'px';
         canvas.style.marginTop = - canvasH / 2 + 'px';
+        console.log(canvas);
         var render = new ScratchRender(canvas);
         var vm = new VirtualMachine();
         var storage = new ScratchStorage();

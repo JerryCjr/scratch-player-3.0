@@ -4785,6 +4785,12 @@ const {FONTS} = __webpack_require__(/*! scratch-render-fonts */ "./node_modules/
  * @return {string} The svg with any needed fonts inlined
  */
 const inlineSvgFonts = function (svgString) {
+    // Make it clear that this function only operates on strings.
+    // If we don't explicitly throw this here, the function silently fails.
+    if (typeof svgString !== 'string') {
+        throw new Error('SVG to be inlined is not a string');
+    }
+
     // Collect fonts that need injection.
     const fontsNeeded = new Set();
     const fontRegex = /font-family="([^"]*)"/g;
@@ -19164,7 +19170,7 @@ var RenderWebGL = function (_EventEmitter) {
         _this.on(RenderConstants.Events.NativeSizeChanged, _this.onNativeSizeChanged);
 
         _this.setBackgroundColor(1, 1, 1);
-        _this.setStageSize(xLeft || -333.5, xRight || 333.5, yBottom || -187.5, yTop || 187.5);
+        _this.setStageSize(xLeft || -406, xRight || 406, yBottom || -187.5, yTop || 187.5);
         _this.resize(_this._nativeSize[0], _this._nativeSize[1]);
 
         gl.disable(gl.DEPTH_TEST);
