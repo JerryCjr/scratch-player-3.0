@@ -14,8 +14,8 @@ body {
 #file-label {
     position: absolute;
     right: 0;
-    bottom: 0;
-    display: none;
+    top: 10%;
+    display: block;
     color: red;
 }
 /* 下拉框 */
@@ -52,8 +52,8 @@ body {
     height: 100vh; */
     /* width: 667px;
     height: 375px; */
-    width: 0;
-    height: 0;
+    width: 1px;
+    height: 1px;
     position: fixed;
     left: 50%;
     top: 50%;

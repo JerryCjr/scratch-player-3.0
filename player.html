@@ -9,26 +9,25 @@
     <link rel="stylesheet" href="./css/index.css">
 </head>
 
-<script src="https://s0.babyfs.cn/op/f/1/f14a6b01c1264e159e5dc678071a39ea/setScreenHoriz.js"></script>
+<script src="./script/jsbridge.js"></script>
+<script src="./script/axios.min.js"></script>
+<script src="./script/scratch-storage.js"></script>
+<script src="./script/scratch-audio.js"></script>
+<script src="./script/vconsole.min.js"></script>
+<script src="./script/scratch-vm.js"></script>
+<script src="./script/util.js"></script>
 
 <body>
+    <!-- canvas -->
     <canvas id="ocanvas"></canvas>
-
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="./script/scratch-vm.js"></script>
-    <script src="./script/scratch-storage.js"></script>
+    <!-- render 引擎 -->
     <script src="./script/scratch-svg-renderer.js"></script>
     <script src="./script/scratch-render.js"></script>
-    <script src="./script/scratch-audio.js"></script>
-    <script src="./script/vconsole.min.js"></script>
-    <script>
-        // init vConsole
-        var vConsole = new VConsole();
-        console.log('Hello world');
-    </script>
 
+    <!-- 上传文件 -->
     <input type="file" id="file" name="file" style="display: none;">
     <label id="file-label" for="file">Select other files from filesystem</label>
+    <!-- 选择文件 -->
     <a class=dropdown>Select other files from local
         <select id="select">
             <option>
@@ -41,6 +40,7 @@
         </select>
     </a>
 
+    <!-- debug area -->
     <div id="detec">
         <p id="J_detectRes"></p>
         <p id="J_detectData"></p>
@@ -48,19 +48,15 @@
     </div>
 
     <script>
-        function getQueryString(name) {
-            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-            var r = window.location.search.substr(1).match(reg);
-            if (r != null) return unescape(r[2]); return null;
-        }
-
-        let canvasH = getQueryString('y'), canvasW = getQueryString('x');
-        const detectWH = document.getElementById('J_detectWH');
-        canvasW = (canvasH / 9 * 19.5).toFixed(2);
-        detectWH.innerHTML = 'canvasW: ' + canvasW + ';<br>' + 'canvasH: ' + canvasH;
+        "use strict";
+        window.__bbfs_scratch = {}; // 适应业务的全局实例
+        window.devicePixelRatio = 3;
+        window.onresize = debounce(detectOrient, 300);  // 3.函数去抖处理
+        detectOrient();
+        const vConsole = new VConsole(); // debug vconsole
+        const canvas = document.getElementById('ocanvas');
         const oSel = document.getElementById('select');
         const oFile = document.getElementById('file');
-        window.devicePixelRatio = 3;
         const dragThreshold = 3;
         const state = {
             mouseDown: false,
@@ -70,45 +66,73 @@
             dragOffset: null,
             dragId: null
         };
-        const canvas = document.getElementById('ocanvas');
         const render = new ScratchRender(canvas);
         const vm = new VirtualMachine();
         const storage = new ScratchStorage();
         const audioEngine = new AudioEngine();
+        resizeCanvas(__bbfs_scratch['canvasW'], __bbfs_scratch['canvasH'])
+        vm.attachStorage(storage);
+        vm.attachRenderer(render);
+        vm.attachAudioEngine(audioEngine);
+        vm.attachV2SVGAdapter(new ScratchSVGRenderer.SVGRenderer());
+        vm.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
 
-        function downloadScratchFile(path = getQueryString('file')) {
-            console.log(path);
+        function readFromSb(targert) {
+            vm.stopAll();
+            vm.clear();
+            const reader = new FileReader();
+            reader.onload = () => {
+                vm.start();
+                vm.loadProject(reader.result)
+                    .then(() => {
+                        vm.greenFlag(); // 执行程序
+                    });
+            };
+            reader.readAsArrayBuffer(targert);
+        }
+
+        oSel.onchange = function () {
+            let filename = ''
+            const value = oSel.options[oSel.selectedIndex].value;
+            switch (Number(value)) {
+                case 0:
+                    filename = 'Icanhelp'
+                    break;
+                case 1:
+                    filename = 'Party dodge! (contest entry) (1)'
+                    break;
+                case 2:
+                    filename = 'Programmable Drum Kit (1)'
+                    break;
+                case 3:
+                    filename = 'DIY Gobo Plush ★ Scratch Day 2019'
+                    break;
+                case 4:
+                    filename = 'Summer Waves _ Spiral(2)'
+                    break;
+                case 5:
+                    filename = 'iphonex'
+                    break;
+
+            }
+            const path = `./sb3/${filename}.sb3`
+            // const path = `//blocky/sb3/${filename}.sb3`
+            fetchScratchFile(path)
+        };
+
+        oFile.addEventListener('change', e => {
+            readFromSb(e.target.files[0])
+        });
+
+        function fetchScratchFile(path = getQueryString('file') || './sb3/Party dodge! (contest entry) (1).sb3') {
+            console.log('[current sb3 path is: ]', path);
             axios.get(path, {
                 responseType: 'blob'
             })
                 .then((res) => {
                     console.log(res);
-                    let reader = new FileReader();
-                    reader.onload = () => {
-                        vm.start();
-                        vm.loadProject(reader.result)
-                            .then(() => {
-                                vm.greenFlag(); // 执行程序
-                            });
-                    };
-                    reader.readAsArrayBuffer(res.data);
+                    readFromSb(res.data)
                 })
-        }
-
-        function resizeCanvas(_w, _h) {
-            canvas.style.width = _w + 'px';
-            canvas.style.height = _h + 'px';
-            canvas.style.marginLeft = - _w / 2 + 'px';
-            canvas.style.marginTop = - _h / 2 + 'px';
-        }
-
-        function getEventXY(e) {
-            if (e.touches && e.touches[0]) {
-                return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            } else if (e.changedTouches && e.changedTouches[0]) {
-                return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-            }
-            return { x: e.clientX, y: e.clientY };
         }
 
         function attachMouseEvents(canvas) {
@@ -256,58 +280,10 @@
             ];
         }
 
-        oSel.onchange = function () {
-            let filename = ''
-            const value = oSel.options[oSel.selectedIndex].value;
-            switch (Number(value)) {
-                case 0:
-                    filename = 'Icanhelp'
-                    break;
-                case 1:
-                    filename = 'Party dodge! (contest entry) (1)'
-                    break;
-                case 2:
-                    filename = 'Programmable Drum Kit (1)'
-                    break;
-                case 3:
-                    filename = 'DIY Gobo Plush ★ Scratch Day 2019'
-                    break;
-                case 4:
-                    filename = 'Summer Waves _ Spiral(2)'
-                    break;
-                case 5:
-                    filename = 'iphonex'
-                    break;
-
-            }
-            const path = `./sb3/${filename}.sb3`
-            downloadScratchFile(path)
-        };
-
-        oFile.addEventListener('change', e => {
-            let reader = new FileReader();
-            let thisFileInput = e.target;
-            reader.onload = () => {
-                vm.start();
-                vm.loadProject(reader.result)
-                    .then(() => {
-                        vm.greenFlag(); // 执行程序
-                    });
-            };
-            reader.readAsArrayBuffer(thisFileInput.files[0]);
-        });
-
-        resizeCanvas(canvasW, canvasH)
-        vm.attachStorage(storage);
-        vm.attachRenderer(render);
-        vm.attachAudioEngine(audioEngine);
-        vm.attachV2SVGAdapter(new ScratchSVGRenderer.SVGRenderer());
-        vm.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
-        downloadScratchFile();
+        fetchScratchFile();
         attachMouseEvents(canvas);
 
     </script>
-
 </body>
 
 </html>
