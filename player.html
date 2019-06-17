@@ -39,37 +39,50 @@
     <script src="./script/scratch-svg-renderer.js"></script>
     <script src="./script/scratch-render.js"></script>
 
-    <!-- 上传文件 -->
-    <input type="file" id="file" name="file" style="display: none;">
-    <label id="file-label" for="file">Select other files from filesystem</label>
-    <!-- 选择文件 -->
-    <a class=dropdown>Select other files from local
-        <select id="select">
-            <option>
-            <option value=0>Icanhelp.sb3
-            <option value=1>Party dodge! (contest entry) (1)
-            <option value=2>Programmable Drum Kit (1)
-            <option value=3>DIY Gobo Plush ★ Scratch Day 2019
-            <option value=4>Summer Waves _ Spiral(2)
-            <option value=5>iphonex
-        </select>
-    </a>
-
-    <!-- debug area -->
-    <div id="detec">
-        <p id="J_detectRes"></p>
-        <p id="J_detectData"></p>
-        <p id="J_detectWH"></p>
+    <div id="debug-area">
+        <!-- 上传文件 -->
+        <input type="file" id="file" name="file" style="display: none;">
+        <label id="file-label" for="file">Select other files from filesystem</label>
+        <!-- 选择文件 -->
+        <a class=dropdown>Select other files from local
+            <select id="select">
+                <option>
+                <option value=0>Icanhelp.sb3
+                <option value=1>Party dodge! (contest entry) (1)
+                <option value=2>Programmable Drum Kit (1)
+                <option value=3>DIY Gobo Plush ★ Scratch Day 2019
+                <option value=4>Summer Waves _ Spiral(2)
+                <option value=5>iphonex
+            </select>
+        </a>
+        <!-- 屏幕信息 -->
+        <div id="detec">
+            <p id="J_detectRes"></p>
+            <p id="J_detectData"></p>
+            <p id="J_detectWH"></p>
+        </div>
     </div>
 
     <script>
         "use strict";
         window.__bbfs_scratch = {}; // 适应业务的全局实例
-        detectOrient(); // 监测屏幕方向
+        window.__bbfs_scratch['debug'] = false;
+        // debug 开关
+        function switchDebug() {
+            const debugDom = document.getElementById('debug-area');
+            if (window.__bbfs_scratch['debug']) {
+                debugDom.style.display = 'block';
+                const vConsole = new VConsole(); // debug vconsole init
+            } else {
+                debugDom.style.display = 'none';
+            }
+        }
+        switchDebug();
+
         window.devicePixelRatio = 3;
+        detectOrient(); // 监测屏幕方向
         window.onresize = debounce(detectOrient, 300);
         const loading = document.getElementById('j_page-loading');
-        const vConsole = new VConsole(); // debug vconsole init
         // loading显示隐藏开关切换
         function switchLoading(_sw) {
             if (_sw) {
