@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="./css/index.css">
 </head>
 
-<script src="./script/jsbridge.js"></script>
+<script src="./script/babyfsJsbridge.min.js"></script>
 <script src="./script/axios.min.js"></script>
 <script src="./script/scratch-storage.js"></script>
 <script src="./script/scratch-audio.js"></script>
@@ -65,6 +65,8 @@
 
     <script>
         "use strict";
+        const bridge = window['babyfs-jsbridge'].default;
+        bridge.callHandler('setScreenHoriz');
         window.__bbfs_scratch = {}; // 适应业务的全局实例
         window.__bbfs_scratch['debug'] = false;
         // debug 开关
@@ -151,7 +153,7 @@
 
             }
             const path = `./sb3/${filename}.sb3`
-            // const path = `//blocky/sb3/${filename}.sb3`
+            // const path = `https://blocky/sb3/${filename}.sb3`
             fetchScratchFile(path)
         };
 
