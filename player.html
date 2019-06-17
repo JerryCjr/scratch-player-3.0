@@ -18,6 +18,21 @@
 <script src="./script/util.js"></script>
 
 <body>
+    <!-- loading -->
+    <div id='j_page-loading' class='m-actloading' style='background-color:rgba(4, 18, 34, 1)'>
+        <div class='loading' style='color:rgba(255, 255, 255, 1)'>
+            <div class='bars'>
+                <span class='loading-bar b1' style='background-color:rgba(255, 255, 255, 1)'></span>
+                <span class='loading-bar b2' style='background-color:rgba(255, 255, 255, 1)'></span>
+                <span class='loading-bar b3' style='background-color:rgba(255, 255, 255, 1)'></span>
+                <span class='loading-bar b4' style='background-color:rgba(255, 255, 255, 1)'></span>
+                <span class='loading-bar b5' style='background-color:rgba(255, 255, 255, 1)'></span>
+                <span class='loading-bar b6' style='background-color:rgba(255, 255, 255, 1)'></span>
+                <span class='loading-bar b7' style='background-color:rgba(255, 255, 255, 1)'></span>
+            </div>
+            <span class='loading-tip'>loading<i class='dots d1'>.</i><i class='dots d2'>.</i><i class='dots d3'>.</i></span>
+        </div>
+    </div>
     <!-- canvas -->
     <canvas id="ocanvas"></canvas>
     <!-- render 引擎 -->
@@ -50,10 +65,31 @@
     <script>
         "use strict";
         window.__bbfs_scratch = {}; // 适应业务的全局实例
+        detectOrient(); // 监测屏幕方向
         window.devicePixelRatio = 3;
-        window.onresize = debounce(detectOrient, 300);  // 3.函数去抖处理
-        detectOrient();
-        const vConsole = new VConsole(); // debug vconsole
+        window.onresize = debounce(detectOrient, 300);
+        const loading = document.getElementById('j_page-loading');
+        const vConsole = new VConsole(); // debug vconsole init
+        // loading显示隐藏开关切换
+        function switchLoading(_sw) {
+            if (_sw) {
+                loading.style.display = 'block';
+            } else {
+                loading.style.display = 'none';
+            }
+        }
+        // 切换项目前
+        function beforeSwitchProject() {
+            switchLoading(true);
+            vm.stopAll();
+            vm.clear();
+        }
+        // 切换项目后
+        function afterSwitchProject() {
+            switchLoading(false);
+            vm.greenFlag(); // 执行程序
+        }
+        switchLoading(true);
         const canvas = document.getElementById('ocanvas');
         const oSel = document.getElementById('select');
         const oFile = document.getElementById('file');
@@ -76,20 +112,6 @@
         vm.attachAudioEngine(audioEngine);
         vm.attachV2SVGAdapter(new ScratchSVGRenderer.SVGRenderer());
         vm.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
-
-        function readFromSb(targert) {
-            vm.stopAll();
-            vm.clear();
-            const reader = new FileReader();
-            reader.onload = () => {
-                vm.start();
-                vm.loadProject(reader.result)
-                    .then(() => {
-                        vm.greenFlag(); // 执行程序
-                    });
-            };
-            reader.readAsArrayBuffer(targert);
-        }
 
         oSel.onchange = function () {
             let filename = ''
@@ -124,17 +146,7 @@
             readFromSb(e.target.files[0])
         });
 
-        function fetchScratchFile(path = getQueryString('file') || './sb3/Party dodge! (contest entry) (1).sb3') {
-            console.log('[current sb3 path is: ]', path);
-            axios.get(path, {
-                responseType: 'blob'
-            })
-                .then((res) => {
-                    console.log(res);
-                    readFromSb(res.data)
-                })
-        }
-
+        // 绑定鼠标事件
         function attachMouseEvents(canvas) {
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
@@ -280,8 +292,34 @@
             ];
         }
 
-        fetchScratchFile();
+        // 本地读取sb*文件(sb3)
+        function readFromSb(targert) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                vm.start();
+                vm.loadProject(reader.result)
+                    .then(() => {
+                        afterSwitchProject();
+                    });
+            };
+            reader.readAsArrayBuffer(targert);
+        }
+
+        // fetch scratch files(sb3)
+        function fetchScratchFile(path = getQueryString('file') || './sb3/Icanhelp.sb3') {
+            console.log('[current sb3 path is: ]', path);
+            beforeSwitchProject();
+            axios.get(path, {
+                responseType: 'blob'
+            })
+                .then((res) => {
+                    console.log(res);
+                    readFromSb(res.data)
+                })
+        }
+
         attachMouseEvents(canvas);
+        fetchScratchFile();
 
     </script>
 </body>
