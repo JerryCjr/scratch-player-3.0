@@ -11,10 +11,10 @@
 
 <script src="./script/babyfsJsbridge.min.js"></script>
 <script src="./script/axios.min.js"></script>
-<script src="./script/scratch-storage.js"></script>
+<script src="./script/scratch-storage.min.js"></script>
 <script src="./script/scratch-audio.js"></script>
 <script src="./script/vconsole.min.js"></script>
-<script src="./script/scratch-vm.js"></script>
+<script src="./script/scratch-vm.min.js"></script>
 <script src="./script/util.js"></script>
 
 <body>
@@ -37,7 +37,7 @@
     <canvas id="ocanvas"></canvas>
     <!-- render 引擎 -->
     <script src="./script/scratch-svg-renderer.js"></script>
-    <script src="./script/scratch-render.js"></script>
+    <script src="./script/scratch-render.min.js"></script>
 
     <div id="debug-area">
         <!-- 上传文件 -->
@@ -68,16 +68,16 @@
         const bridge = window['babyfs-jsbridge'].default;
         bridge.callHandler('setScreenHoriz');
         window.__bbfs_scratch = {}; // 适应业务的全局实例
-        window.__bbfs_scratch['debug'] = false;
+        window.__bbfs_scratch['debug'] = true;
         // debug 开关
         function switchDebug() {
             const debugDom = document.getElementById('debug-area');
             if (window.__bbfs_scratch['debug']) {
                 debugDom.style.display = 'block';
-                const vConsole = new VConsole(); // debug vconsole init
             } else {
                 debugDom.style.display = 'none';
             }
+            const vConsole = new VConsole(); // debug vconsole init
         }
         switchDebug();
 
@@ -152,8 +152,8 @@
                     break;
 
             }
-            const path = `./sb3/${filename}.sb3`
-            // const path = `https://blocky/sb3/${filename}.sb3`
+            // const path = `./sb3/${filename}.sb3`
+            const path = `https://blocky/sb3/${filename}.sb3`
             fetchScratchFile(path)
         };
 
@@ -321,16 +321,18 @@
         }
 
         // fetch scratch files(sb3)
-        function fetchScratchFile(path = getQueryString('file') || './sb3/Icanhelp.sb3') {
+        function fetchScratchFile(path = getQueryString('file')) {
             console.log('[current sb3 path is: ]', path);
-            beforeSwitchProject();
-            axios.get(path, {
-                responseType: 'blob'
-            })
-                .then((res) => {
-                    console.log(res);
-                    readFromSb(res.data)
+            if (path) {
+                beforeSwitchProject();
+                axios.get(path, {
+                    responseType: 'blob'
                 })
+                    .then((res) => {
+                        console.log(res);
+                        readFromSb(res.data)
+                    })
+            }
         }
 
         attachMouseEvents(canvas);
