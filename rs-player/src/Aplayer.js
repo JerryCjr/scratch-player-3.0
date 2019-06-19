@@ -1,7 +1,7 @@
-import regeneratorRuntime from './lib/runtime';
+/* eslint-disable no-undef */
+// import regeneratorRuntime from './lib/runtime';
 import bindAll from 'lodash.bindall';
 import React from 'react';
-import ReactDOM from 'react-dom';
 import ajax from "axios";
 import VM from 'scratch-vm';
 import Storage from 'scratch-storage';
@@ -58,6 +58,17 @@ class Player extends React.Component {
     this.vm.attachV2BitmapAdapter(new V2BitmapAdapter());
   }
   async componentDidMount() {
+    // this.canvas = document.getElementById('ocanvas');
+    // this.renderer = new Renderer(this.canvas);
+    // this.storage = new Storage();
+    // this.audio = new AudioEngine();
+    // this.vm = new VM();
+    // this.vm.attachStorage(this.storage)
+    // this.vm.attachRenderer(this.renderer);
+    // this.vm.attachAudioEngine(this.audio);
+    // this.vm.renderer.draw();
+    // this.vm.attachV2SVGAdapter(new V2SVGAdapter());
+    // this.vm.attachV2BitmapAdapter(new V2BitmapAdapter());
     document.querySelector('#container').appendChild(this.canvas)
     let r;
     r = await ajax.get('http://pspkamwf3.bkt.clouddn.com/Party%20dodge%21%20%28contest%20entry%29%20%281%29.sb3', { responseType: 'blob' });
@@ -347,13 +358,10 @@ class Player extends React.Component {
   }
   render() {
     return (
+      <div id="container">
       <canvas id="ocanvas"></canvas>
+      </div>
     );
   }
 }
 export default Player;
-ReactDOM.render(
-  <Player />,
-  document.getElementById('app')
-);
-module.hot.accept();
