@@ -53,6 +53,7 @@
                 <option value=3>DIY Gobo Plush ★ Scratch Day 2019
                 <option value=4>Summer Waves _ Spiral(2)
                 <option value=5>iphonex
+                <option value=6>Where To Get Free Resources
             </select>
         </a>
         <!-- 屏幕信息 -->
@@ -68,7 +69,7 @@
         const bridge = window['babyfs-jsbridge'].default;
         bridge.callHandler('setScreenHoriz');
         window.__bbfs_scratch = {}; // 适应业务的全局实例
-        window.__bbfs_scratch['debug'] = false;
+        window.__bbfs_scratch['debug'] = true;
         // debug 开关
         function switchDebug() {
             const debugDom = document.getElementById('debug-area');
@@ -149,6 +150,9 @@
                     break;
                 case 5:
                     filename = 'iphonex'
+                    break;
+                case 6:
+                    filename = 'Where To Get Free Resources'
                     break;
 
             }
