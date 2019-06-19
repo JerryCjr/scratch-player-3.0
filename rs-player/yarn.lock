@@ -1095,6 +1095,11 @@
   resolved "http://npm.babyfs.cn/@nodelib%2ffs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
+"@scratch/paper@0.11.20181220183503":
+  version "0.11.20181220183503"
+  resolved "http://npm.babyfs.cn/@scratch%2fpaper/-/paper-0.11.20181220183503.tgz#709ea2a8a903f097cfb74aba2b79685f5d972ff5"
+  integrity sha512-maDf8546zEhBtigsp4jvCh9xYCoW7eDy5IvN2AZGOVzqjLQ0zD5kpQVo0cW2EhYkIPl4TiY8CCIQX5K7ScHZ2Q==
+
 "@svgr/babel-plugin-add-jsx-attribute@^4.2.0":
   version "4.2.0"
   resolved "http://npm.babyfs.cn/@svgr%2fbabel-plugin-add-jsx-attribute/-/babel-plugin-add-jsx-attribute-4.2.0.tgz#dadcb6218503532d6884b210e7f3c502caaa44b1"
@@ -2548,6 +2553,11 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
+classnames@2.2.5:
+  version "2.2.5"
+  resolved "http://npm.babyfs.cn/classnames/-/classnames-2.2.5.tgz#fb3801d453467649ef3603c7d61a02bd129bde6d"
+  integrity sha1-+zgB1FNGdknvNgPH1hoCvRKb3m0=
+
 clean-css@4.2.x:
   version "4.2.1"
   resolved "http://npm.babyfs.cn/clean-css/-/clean-css-4.2.1.tgz#2d411ef76b8569b6d0c84068dabe85b0aa5e5c17"
@@ -2630,6 +2640,11 @@ color-convert@^1.9.0, color-convert@^1.9.1:
   integrity sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==
   dependencies:
     color-name "1.1.3"
+
+color-convert@~0.5.0:
+  version "0.5.3"
+  resolved "http://npm.babyfs.cn/color-convert/-/color-convert-0.5.3.tgz#bdb6c69ce660fadffe0b0007cc447e1b9f7282bd"
+  integrity sha1-vbbGnOZg+t/+CwAHzER+G59ygr0=
 
 color-name@1.1.3:
   version "1.1.3"
@@ -6099,6 +6114,11 @@ jszip@^3.1.5:
     readable-stream "~2.3.6"
     set-immediate-shim "~1.0.1"
 
+keymirror@0.1.1:
+  version "0.1.1"
+  resolved "http://npm.babyfs.cn/keymirror/-/keymirror-0.1.1.tgz#918889ea13f8d0a42e7c557250eee713adc95c35"
+  integrity sha1-kYiJ6hP40KQufFVyUO7nE63JXDU=
+
 killable@^1.0.0:
   version "1.0.1"
   resolved "http://npm.babyfs.cn/killable/-/killable-1.0.1.tgz#4c8ce441187a061c7474fb87ca08e2a638194892"
@@ -6269,7 +6289,7 @@ lodash._reinterpolate@~3.0.0:
   resolved "http://npm.babyfs.cn/lodash._reinterpolate/-/lodash._reinterpolate-3.0.0.tgz#0ccf2d89166af03b3663c796538b75ac6e114d9d"
   integrity sha1-DM8tiRZq8Ds2Y8eWU4t1rG4RTZ0=
 
-lodash.bindall@^4.4.0:
+lodash.bindall@4.4.0, lodash.bindall@^4.4.0:
   version "4.4.0"
   resolved "http://npm.babyfs.cn/lodash.bindall/-/lodash.bindall-4.4.0.tgz#a7bfd482ba3d2e707169dfcdc993ebbf6c3d7998"
   integrity sha1-p7/Ugro9LnBxad/NyZPrv2w9eZg=
@@ -6278,6 +6298,11 @@ lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "http://npm.babyfs.cn/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
   integrity sha1-vMbEmkKihA7Zl/Mj6tpezRguC/4=
+
+lodash.omit@4.5.0:
+  version "4.5.0"
+  resolved "http://npm.babyfs.cn/lodash.omit/-/lodash.omit-4.5.0.tgz#6eb19ae5a1ee1dd9df0b969e66ce0b7fa30b5e60"
+  integrity sha1-brGa5aHuHdnfC5aeZs4Lf6MLXmA=
 
 lodash.sortby@^4.7.0:
   version "4.7.0"
@@ -7266,6 +7291,13 @@ parse-asn1@^5.0.0:
     pbkdf2 "^3.0.3"
     safe-buffer "^5.1.1"
 
+parse-color@1.0.0:
+  version "1.0.0"
+  resolved "http://npm.babyfs.cn/parse-color/-/parse-color-1.0.0.tgz#7b748b95a83f03f16a94f535e52d7f3d94658619"
+  integrity sha1-e3SLlag/A/FqlPU15S1/PZRlhhk=
+  dependencies:
+    color-convert "~0.5.0"
+
 parse-headers@^2.0.0:
   version "2.0.2"
   resolved "http://npm.babyfs.cn/parse-headers/-/parse-headers-2.0.2.tgz#9545e8a4c1ae5eaea7d24992bca890281ed26e34"
@@ -8212,7 +8244,7 @@ prompts@^2.0.1:
     kleur "^3.0.2"
     sisteransi "^1.0.0"
 
-prop-types@^15.6.2:
+prop-types@^15.5.10, prop-types@^15.6.2:
   version "15.7.2"
   resolved "http://npm.babyfs.cn/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -8943,6 +8975,21 @@ scratch-audio@^0.1.0-prerelease.20190114210212:
     minilog "^3.0.1"
     startaudiocontext "1.2.1"
 
+scratch-paint@^0.2.0-prerelease.20190524133325:
+  version "0.2.0-prerelease.20190524133325"
+  resolved "http://npm.babyfs.cn/scratch-paint/-/scratch-paint-0.2.0-prerelease.20190524133325.tgz#5784dd7b273113491d954b9d492439ab5a345a05"
+  integrity sha512-Cpf/l0ssoeoxFizuM5c6JBRELXvc3alwiggo6CwoUB8fAHRizvtu895iZYzyhN6vHrmWIUvw5cTimSSP2IGzFA==
+  dependencies:
+    "@scratch/paper" "0.11.20181220183503"
+    classnames "2.2.5"
+    keymirror "0.1.1"
+    lodash.bindall "4.4.0"
+    lodash.omit "4.5.0"
+    minilog "3.1.0"
+    parse-color "1.0.0"
+    prop-types "^15.5.10"
+    scratch-svg-renderer "0.2.0-prerelease.20190523193400"
+
 scratch-parser@5.0.0:
   version "5.0.0"
   resolved "http://npm.babyfs.cn/scratch-parser/-/scratch-parser-5.0.0.tgz#480c357047d45b7119b74be441ba4a3c28cd8216"
@@ -9007,15 +9054,15 @@ scratch-svg-renderer@0.2.0-prerelease.20190523193400, scratch-svg-renderer@^0.2.
     scratch-render-fonts "1.0.0-prerelease.20180906193204"
     transformation-matrix "1.14.1"
 
-scratch-translate-extension-languages@0.0.20190416132834:
-  version "0.0.20190416132834"
-  resolved "http://npm.babyfs.cn/scratch-translate-extension-languages/-/scratch-translate-extension-languages-0.0.20190416132834.tgz#988eb4a6ee7abcaec8077ad8519a7b4236242d67"
-  integrity sha512-mRDRBqbwf52DSbR9tJLRw2/MIUoFncNaqTKkVjdDJcIRm5niTtKtFDn2BlyQunAAkUVdswncS0t1wpf155lQGw==
+scratch-translate-extension-languages@0.0.20181205140428:
+  version "0.0.20181205140428"
+  resolved "http://npm.babyfs.cn/scratch-translate-extension-languages/-/scratch-translate-extension-languages-0.0.20181205140428.tgz#27746e4d628810c7b35f7e8caa5963be5349a8f9"
+  integrity sha512-vNE8LSIrJl5cCCS1yrR6wivtFhuJmHFhbZnTrkt/E3BfyqMBJgpqJTtYfi+up1sorc7AixhpHTARE6/t3D//MA==
 
-scratch-vm@^0.2.0-prerelease.20190619042313:
-  version "0.2.0-prerelease.20190619042313"
-  resolved "http://npm.babyfs.cn/scratch-vm/-/scratch-vm-0.2.0-prerelease.20190619042313.tgz#2e40b37c84d346a798dfce663c2b947d8cc6a067"
-  integrity sha512-S27uITy1MuP8gcxVHscTcsK349jwPhp5bOB+RDYBosrR8zV0v1tHDizCH50aGh8gxJdBX6wv7QYN2EkIOh6USA==
+scratch-vm@0.2.0-prerelease.20190604212312:
+  version "0.2.0-prerelease.20190604212312"
+  resolved "http://npm.babyfs.cn/scratch-vm/-/scratch-vm-0.2.0-prerelease.20190604212312.tgz#ed8aa92c21c4694e787707b67d8874c05f9e9c1c"
+  integrity sha512-T5ZIynZdCy+dgrDhVcyRIWoSBjU2Kbusw2OXbixge3NCJe92cFeNJ2yO6vpaFAWwdWZqGz7pCaPhOufF+7mLhw==
   dependencies:
     "@vernier/godirect" "1.5.0"
     arraybuffer-loader "^1.0.6"
@@ -9032,7 +9079,7 @@ scratch-vm@^0.2.0-prerelease.20190619042313:
     nets "3.2.0"
     scratch-parser "5.0.0"
     scratch-sb1-converter "0.2.7"
-    scratch-translate-extension-languages "0.0.20190416132834"
+    scratch-translate-extension-languages "0.0.20181205140428"
     socket.io-client "2.0.4"
     text-encoding "0.7.0"
     worker-loader "^1.1.1"

@@ -35,25 +35,27 @@ class Player extends React.Component {
     this.renderer = new Renderer(this.canvas);
     this.storage = new Storage();
     this.audio = new AudioEngine();
-    console.log(this.renderer);
-    console.log(this.storage);
     this.vm = new VM();
     this.vm.attachStorage(this.storage)
     this.vm.attachRenderer(this.renderer);
     this.vm.attachAudioEngine(this.audio);
     this.vm.renderer.draw();
+    console.log(V2SVGAdapter);
+    console.log(V2BitmapAdapter);
     this.vm.attachV2SVGAdapter(new V2SVGAdapter());
     this.vm.attachV2BitmapAdapter(new V2BitmapAdapter());
+
     let r;
-    r = await ajax.get('http://pspkamwf3.bkt.clouddn.com/Icanhelp.sb3', { responseType: 'blob' });
+    r = await ajax.get('http://pspkamwf3.bkt.clouddn.com/Icanhelp1.sb3', { responseType: 'blob' });
     if (r && r.data) {
       this.setState({
         scratchData: r.data
       })
     }
+    console.log(r);
     let reader = new FileReader();
     reader.onload = () => {
-      // console.log(reader.result);
+      console.log(reader.result);
       this.vm.start();
       this.vm.loadProject(reader.result)
         .then(() => {

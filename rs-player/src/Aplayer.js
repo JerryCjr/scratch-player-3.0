@@ -71,7 +71,7 @@ class Player extends React.Component {
     // this.vm.attachV2BitmapAdapter(new V2BitmapAdapter());
     document.querySelector('#container').appendChild(this.canvas)
     let r;
-    r = await ajax.get('http://pspkamwf3.bkt.clouddn.com/Party%20dodge%21%20%28contest%20entry%29%20%281%29.sb3', { responseType: 'blob' });
+    r = await ajax.get('http://pspkamwf3.bkt.clouddn.com/Icanhelp1.sb3', { responseType: 'blob' });
     if (r && r.data) {
       this.setState({
         scratchData: r.data

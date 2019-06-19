@@ -152,8 +152,8 @@
                     break;
 
             }
-            // const path = `./sb3/${filename}.sb3`
-            const path = `https://blocky/sb3/${filename}.sb3`
+            const path = `./sb3/${filename}.sb3`
+            // const path = `https://blocky/sb3/${filename}.sb3`
             fetchScratchFile(path)
         };
 
@@ -321,7 +321,7 @@
         }
 
         // fetch scratch files(sb3)
-        function fetchScratchFile(path = getQueryString('file')) {
+        function fetchScratchFile(path = getQueryString('file') || './sb3/Icanhelp.sb3') {
             console.log('[current sb3 path is: ]', path);
             if (path) {
                 beforeSwitchProject();
