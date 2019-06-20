@@ -1,0 +1,11 @@
+#container {
+    width: 10px;
+    height: 10px;
+    display: block;
+    background-color: red;
+}
+
+#ocanvas {
+    width: 100vw;
+    height: 100vh;
+}

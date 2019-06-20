@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
-// import regeneratorRuntime from './lib/runtime';
+// eslint-disable-next-line no-unused-vars
+import regeneratorRuntime from './lib/runtime.js';
 import bindAll from 'lodash.bindall';
 import React from 'react';
 import ajax from "axios";
@@ -35,7 +36,6 @@ class Player extends React.Component {
       'positionDragCanvas'
     ]);
     this.state = {
-      scratchData: null,
       mouseDownTimeoutId: null,
       mouseDownPosition: null,
       isDragging: false,
@@ -72,24 +72,22 @@ class Player extends React.Component {
     document.querySelector('#container').appendChild(this.canvas)
     let r;
     r = await ajax.get('http://pspkamwf3.bkt.clouddn.com/Icanhelp1.sb3', { responseType: 'blob' });
+    console.log(r);
     if (r && r.data) {
-      this.setState({
-        scratchData: r.data
-      })
+      let reader = new FileReader();
+      reader.onload = () => {
+        console.log(reader.result);
+        this.vm.start();
+        this.vm.loadProject(reader.result)
+          .then(() => {
+            this.vm.greenFlag(); // 执行程序
+          });
+      };
+      reader.readAsArrayBuffer(r.data);
+      this.attachRectEvents();
+      this.attachMouseEvents(this.canvas);
+      this.updateRect();
     }
-    let reader = new FileReader();
-    reader.onload = () => {
-      // console.log(reader.result);
-      this.vm.start();
-      this.vm.loadProject(reader.result)
-        .then(() => {
-          this.vm.greenFlag(); // 执行程序
-        });
-    };
-    reader.readAsArrayBuffer(r.data);
-    this.attachRectEvents();
-    this.attachMouseEvents(this.canvas);
-    this.updateRect();
   }
   shouldComponentUpdate(nextProps, nextState) {
     return this.props.stageSize !== nextProps.stageSize ||

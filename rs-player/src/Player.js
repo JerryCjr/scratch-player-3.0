@@ -18,7 +18,6 @@ class Player extends React.Component {
     this.state = {
       oW: 667,
       oH: 375,
-      scratchData: null,
       mouseDownTimeoutId: null,
       mouseDownPosition: null,
       isDragging: false,
@@ -44,25 +43,23 @@ class Player extends React.Component {
     console.log(V2BitmapAdapter);
     this.vm.attachV2SVGAdapter(new V2SVGAdapter());
     this.vm.attachV2BitmapAdapter(new V2BitmapAdapter());
+    console.log(this.vm);
 
     let r;
     r = await ajax.get('http://pspkamwf3.bkt.clouddn.com/Icanhelp1.sb3', { responseType: 'blob' });
     if (r && r.data) {
-      this.setState({
-        scratchData: r.data
-      })
+      console.log(r);
+      let reader = new FileReader();
+      reader.onload = () => {
+        console.log(reader.result);
+        this.vm.start();
+        this.vm.loadProject(reader.result)
+          .then(() => {
+            // this.vm.greenFlag(); // 执行程序
+          });
+      };
+      reader.readAsArrayBuffer(r.data);
     }
-    console.log(r);
-    let reader = new FileReader();
-    reader.onload = () => {
-      console.log(reader.result);
-      this.vm.start();
-      this.vm.loadProject(reader.result)
-        .then(() => {
-          // this.vm.greenFlag(); // 执行程序
-        });
-    };
-    reader.readAsArrayBuffer(r.data);
   }
 
   updateRect() {
