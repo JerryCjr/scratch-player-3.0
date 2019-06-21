@@ -1047,8 +1047,7 @@ var BitmapAdapter = function () {
     }, {
         key: 'getResizedWidthHeight',
         value: function getResizedWidthHeight(oldWidth, oldHeight) {
-            console.log('svg-render');
-            var STAGE_WIDTH = 667;
+            var STAGE_WIDTH = 812;
             var STAGE_HEIGHT = 375;
             var STAGE_RATIO = STAGE_WIDTH / STAGE_HEIGHT;
 
