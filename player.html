@@ -323,7 +323,7 @@
         // fetch scratch files(sb3)
         function fetchScratchFile(fileName = getQueryString('file')) {
             console.log('[current sb3 path is: ]', fileName);
-            const path = `./sb3/${fileName}.sb3`
+            const path = `./sb3/${fileName}`
             console.log(path);
             if (path) {
                 beforeSwitchProject();
