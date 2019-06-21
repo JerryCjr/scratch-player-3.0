@@ -68,7 +68,7 @@
         const bridge = window['babyfs-jsbridge'].default;
         bridge.callHandler('setScreenHoriz');
         window.__bbfs_scratch = {}; // 适应业务的全局实例
-        window.__bbfs_scratch['debug'] = true;
+        window.__bbfs_scratch['debug'] = false;
         // debug 开关
         function switchDebug() {
             const debugDom = document.getElementById('debug-area');
@@ -321,8 +321,10 @@
         }
 
         // fetch scratch files(sb3)
-        function fetchScratchFile(path = getQueryString('file')) {
-            console.log('[current sb3 path is: ]', path);
+        function fetchScratchFile(fileName = getQueryString('file')) {
+            console.log('[current sb3 path is: ]', fileName);
+            const path = `./sb3/${fileName}.sb3`
+            console.log(path);
             if (path) {
                 beforeSwitchProject();
                 axios.get(path, {
