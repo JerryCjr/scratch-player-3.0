@@ -312,6 +312,8 @@
             const reader = new FileReader();
             reader.onload = () => {
                 vm.start();
+                vm.setCompatibilityMode(false);
+                vm.setTurboMode(false);
                 vm.loadProject(reader.result)
                     .then(() => {
                         afterSwitchProject();
