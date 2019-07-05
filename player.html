@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="./css/index.css">
 </head>
 
-<script src="./script/babyfsJsbridge.min.js"></script>
+<!-- <script src="./script/babyfsJsbridge.min.js"></script> -->
 <script src="./script/axios.min.js"></script>
 <script src="./script/scratch-storage.js"></script>
 <script src="./script/scratch-audio.js"></script>
@@ -49,10 +49,10 @@
 
     <script>
         "use strict";
-        const bridge = window['babyfs-jsbridge'].default;
-        bridge.callHandler('setScreenHoriz');
         window.__bbfs_scratch = {}; // 适应业务的全局实例
         window.__bbfs_scratch['debug'] = true;
+        // const bridge = window['babyfs-jsbridge'].default;
+        // bridge.callHandler('setScreenHoriz');
         // debug 开关
         function switchDebug() {
             const debugDom = document.getElementById('debug-area');
@@ -133,9 +133,10 @@
             console.log('[LOAD_PROJECT_DURATION]', window.__bbfs_scratch['LOAD_PROJECT_DURATION']);
             // DURATION
             window.__bbfs_scratch['LOAD_TO_FETCH_DURATION'] = window.__bbfs_scratch['FETCHED_SB3'] - window.__bbfs_scratch['LOAD'];
-
+            window.__bbfs_scratch['SCRIPT_START']
             console.log('[LOAD_TO_FETCH_DURATION]', window.__bbfs_scratch['LOAD_TO_FETCH_DURATION']);
             console.log('[WHOLE_DURATION]', window.__bbfs_scratch['WHOLE_DURATION']);
+            console.log('[SCRIPT_TO_PROJECT_DURATION]', window.__bbfs_scratch['SCRIPT_TO_PROJECT_DURATION']);
             // console.log(window.performance);
             // console.log('[MEMORY]', window.performance['memory']);
             // console.log('[TIMING]', window.performance['timing']);
