@@ -69,12 +69,12 @@ function detectOrient() {
         'screen.width：' + window.screen.width + ';<br>' +
         'screen.height：' + window.screen.height + ';';
 
-    if (document.documentElement.clientWidth > document.documentElement.clientHeight) {
-        // canvasW = document.documentElement.clientWidth;
-        __bbfs_scratch['canvasH'] = document.documentElement.clientHeight;
+    if (window.screen.width > window.screen.height) {
+        // canvasW = window.screen.width;
+        __bbfs_scratch['canvasH'] = window.screen.height;
     } else {
-        // canvasW = document.documentElement.clientHeight;
-        __bbfs_scratch['canvasH'] = document.documentElement.clientWidth;
+        // canvasW = window.screen.height;
+        __bbfs_scratch['canvasH'] = window.screen.width;
 
     }
 
@@ -88,7 +88,7 @@ function detectOrient() {
  * @param {number} _w 
  * @param {number} _h 
  */
-function resizeCanvas(_w, _h) {
+function resizeCanvas(canvas, _w, _h) {
     canvas.style.width = _w + 'px';
     canvas.style.height = _h + 'px';
     canvas.style.marginLeft = - _w / 2 + 'px';

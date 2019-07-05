@@ -40,23 +40,6 @@
     <script src="./script/scratch-render.js"></script>
 
     <div id="debug-area">
-        <!-- 上传文件 -->
-        <input type="file" id="file" name="file" style="display: none;">
-        <label id="file-label" for="file">Select other files from filesystem</label>
-        <!-- 选择文件 -->
-        <a class=dropdown>Select other files from local
-            <select id="select">
-                <option>
-                <option value=0>Icanhelp.sb3
-                <option value=1>Party dodge! (contest entry) (1)
-                <option value=2>Programmable Drum Kit (1)
-                <option value=3>DIY Gobo Plush ★ Scratch Day 2019
-                <option value=4>Summer Waves _ Spiral(2)
-                <option value=5>iphonex
-                <option value=6>Where To Get Free Resources
-            </select>
-        </a>
-        <!-- 屏幕信息 -->
         <div id="detec">
             <p id="J_detectRes"></p>
             <p id="J_detectData"></p>
@@ -122,48 +105,41 @@
         const vm = new VirtualMachine();
         const storage = new ScratchStorage();
         const audioEngine = new AudioEngine();
-        resizeCanvas(__bbfs_scratch['canvasW'], __bbfs_scratch['canvasH'])
+        resizeCanvas(canvas, __bbfs_scratch['canvasW'], __bbfs_scratch['canvasH'])
         vm.attachStorage(storage);
         vm.attachRenderer(render);
         vm.attachAudioEngine(audioEngine);
         vm.attachV2SVGAdapter(new ScratchSVGRenderer.SVGRenderer());
         vm.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
+        vm.runtime.on('PROJECT_START', (e) => {
+            window.__bbfs_scratch['LOADED_PROJECT'] = +new Date();
+            window.__bbfs_scratch['LOAD_PROJECT_DURATION'] = window.__bbfs_scratch['LOADED_PROJECT'] - window.__bbfs_scratch['LOAD_PROJECT'];
+            window.__bbfs_scratch['WHOLE_DURATION'] = window.__bbfs_scratch['LOADED_PROJECT'] - window.__bbfs_scratch['LOAD'];
+            // WINDOW.LOAD
+            console.log('[LOAD]', window.__bbfs_scratch['LOAD']);
+            console.log('[UNLOAD]', window.__bbfs_scratch['UNLOAD']);
+            console.log('[LOAD_DURATION]', window.__bbfs_scratch['LOAD_DURATION']);
+            // PROJECT
+            console.log('[FETCH_SB3]', window.__bbfs_scratch['FETCH_SB3']);
+            console.log('[FETCHED_SB3]', window.__bbfs_scratch['FETCHED_SB3']);
+            console.log('[FETCH_SB3_DURATION]', window.__bbfs_scratch['FETCH_SB3_DURATION']);
+            // LOAD SB3
+            console.log('[LOAD_SB3]', window.__bbfs_scratch['LOAD_SB3']);
+            console.log('[LOADED_SB3]', window.__bbfs_scratch['LOADED_SB3']);
+            console.log('[LOAD_SB3_DURATION]', window.__bbfs_scratch['LOAD_SB3_DURATION']);
+            // PROJECT
+            console.log('[LOAD_PROJECT]', window.__bbfs_scratch['LOAD_PROJECT']);
+            console.log('[LOADED_PROJECT]', window.__bbfs_scratch['LOADED_PROJECT']);
+            console.log('[LOAD_PROJECT_DURATION]', window.__bbfs_scratch['LOAD_PROJECT_DURATION']);
+            // DURATION
+            window.__bbfs_scratch['LOAD_TO_FETCH_DURATION'] = window.__bbfs_scratch['FETCHED_SB3'] - window.__bbfs_scratch['LOAD'];
 
-        oSel.onchange = function () {
-            let filename = ''
-            const value = oSel.options[oSel.selectedIndex].value;
-            switch (Number(value)) {
-                case 0:
-                    filename = 'Icanhelp'
-                    break;
-                case 1:
-                    filename = 'Party dodge! (contest entry) (1)'
-                    break;
-                case 2:
-                    filename = 'Programmable Drum Kit (1)'
-                    break;
-                case 3:
-                    filename = 'DIY Gobo Plush ★ Scratch Day 2019'
-                    break;
-                case 4:
-                    filename = 'Summer Waves _ Spiral(2)'
-                    break;
-                case 5:
-                    filename = 'iphonex'
-                    break;
-                case 6:
-                    filename = 'Where To Get Free Resources'
-                    break;
-
-            }
-            const path = `./sb3/${filename}.sb3`
-            // const path = `https://blocky/sb3/${filename}.sb3`
-            fetchScratchFile(path)
-        };
-
-        oFile.addEventListener('change', e => {
-            readFromSb(e.target.files[0])
-        });
+            console.log('[LOAD_TO_FETCH_DURATION]', window.__bbfs_scratch['LOAD_TO_FETCH_DURATION']);
+            console.log('[WHOLE_DURATION]', window.__bbfs_scratch['WHOLE_DURATION']);
+            // console.log(window.performance);
+            // console.log('[MEMORY]', window.performance['memory']);
+            // console.log('[TIMING]', window.performance['timing']);
+        })
 
         // 绑定鼠标事件
         function attachMouseEvents(canvas) {
@@ -173,6 +149,15 @@
             document.addEventListener('touchend', onMouseUp);
             canvas.addEventListener('mousedown', onMouseDown);
             canvas.addEventListener('touchstart', onMouseDown);
+        }
+
+        function detachMouseEvents(canvas) {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+            document.removeEventListener('touchmove', onMouseMove);
+            document.removeEventListener('touchend', onMouseUp);
+            canvas.removeEventListener('mousedown', onMouseDown);
+            canvas.removeEventListener('touchstart', onMouseDown);
         }
 
         function onMouseMove(e) {
@@ -313,9 +298,14 @@
 
         // 本地读取sb*文件(sb3)
         function readFromSb(targert) {
+            window.__bbfs_scratch['LOAD_SB3'] = +new Date();
             const reader = new FileReader();
             reader.onload = () => {
+                console.log(reader.result);
+                window.__bbfs_scratch['LOADED_SB3'] = +new Date();
+                window.__bbfs_scratch['LOAD_SB3_DURATION'] = window.__bbfs_scratch.LOADED_SB3 - window.__bbfs_scratch.LOAD_SB3;
                 vm.start();
+                window.__bbfs_scratch['LOAD_PROJECT'] = +new Date();
                 vm.loadProject(reader.result)
                     .then(() => {
                         afterSwitchProject();
@@ -325,7 +315,8 @@
         }
 
         // fetch scratch files(sb3)
-        function fetchScratchFile(path = getQueryString('file') || './sb3/Icanhelp.sb3') {
+        function fetchScratchFile(path = getQueryString('file')) {
+            window.__bbfs_scratch['FETCH_SB3'] = +new Date();
             console.log('[current sb3 path is: ]', path);
             beforeSwitchProject();
             axios.get(path, {
@@ -333,12 +324,24 @@
             })
                 .then((res) => {
                     console.log(res);
+                    window.__bbfs_scratch['FETCHED_SB3'] = +new Date();
+                    window.__bbfs_scratch['FETCH_SB3_DURATION'] = window.__bbfs_scratch['FETCHED_SB3'] - window.__bbfs_scratch['FETCH_SB3'];
                     readFromSb(res.data)
                 })
         }
 
-        attachMouseEvents(canvas);
-        fetchScratchFile();
+        window.addEventListener('load', function () {
+            window.__bbfs_scratch['LOAD'] = +new Date();
+            attachMouseEvents(canvas);
+            fetchScratchFile();
+        })
+
+        window.addEventListener('unLoad', function () {
+            window.__bbfs_scratch['UNLOAD'] = +new Date();
+            window.__bbfs_scratch['LOAD_DURATION'] = window.__bbfs_scratch['UNLOAD'] - window.__bbfs_scratch['LOAD'];
+            window.__bbfs_scratch = null;
+            detachMouseEvents(canvas);
+        })
 
     </script>
 </body>
