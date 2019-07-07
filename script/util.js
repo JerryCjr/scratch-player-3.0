@@ -31,9 +31,6 @@ function debounce(func, delay) {
  * @function 监测屏幕方向
  */
 function detectOrient() {
-    const detectData = document.getElementById('J_detectData');
-    const detectWH = document.getElementById('J_detectWH');
-    const detectRes = document.getElementById('J_detectRes');
     let sw, sh;
     var storage = localStorage; // 不一定要使用localStorage，其他存储数据的手段都可以
     var data = storage.getItem('J-recordOrientX');
@@ -56,31 +53,28 @@ function detectOrient() {
 
     if (cw == _Width) {
         // 竖屏
-        detectRes.innerHTML = '检测结果是竖屏';
+        window.__bbfs_scratch['detectRes'] = '检测结果是竖屏';
     }
     if (cw == _Height) {
         // 横屏
-        detectRes.innerHTML = '检测结果是横屏';
+        window.__bbfs_scratch['detectRes'] = '检测结果是横屏';
     }
 
 
-    detectData.innerHTML = 'clientWidth；' + document.documentElement.clientWidth + ';<br>' +
-        'clientHeight；' + document.documentElement.clientHeight + ';<br>' +
-        'screen.width：' + window.screen.width + ';<br>' +
-        'screen.height：' + window.screen.height + ';';
+    window.__bbfs_scratch['clientWidth'] = document.documentElement.clientWidth;
+    window.__bbfs_scratch['clientHeight'] = document.documentElement.clientHeight;
+    window.__bbfs_scratch['screenWidth'] = window.screen.width;
+    window.__bbfs_scratch['screenHeight'] = window.screen.height;
 
     if (window.screen.width > window.screen.height) {
         // canvasW = window.screen.width;
-        __bbfs_scratch['canvasH'] = window.screen.height;
+        window.__bbfs_scratch['canvasH'] = window.screen.height;
     } else {
         // canvasW = window.screen.height;
-        __bbfs_scratch['canvasH'] = window.screen.width;
-
+        window.__bbfs_scratch['canvasH'] = window.screen.width;
     }
 
-    __bbfs_scratch['canvasW'] = (__bbfs_scratch['canvasH'] / 9 * 19.5).toFixed(2);
-
-    detectWH.innerHTML = 'canvasW: ' + __bbfs_scratch['canvasW'] + ';<br>' + 'canvasH: ' + __bbfs_scratch['canvasH'];
+    window.__bbfs_scratch['canvasW'] = (window.__bbfs_scratch['canvasH'] / 9 * 19.5).toFixed(2);
 }
 
 /**

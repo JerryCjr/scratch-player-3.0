@@ -7,9 +7,20 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Awesome Scratch</title>
     <link rel="stylesheet" href="./css/index.css">
+    <style>
+        #progress-loading {
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 50%;
+            margin-top: -30px;
+        }
+    </style>
+    <link rel="stylesheet" href="./loading-bar/loading-bar.css">
 </head>
 
 <!-- <script src="./script/babyfsJsbridge.min.js"></script> -->
+<script src="./loading-bar/loading-bar.js"></script>
 <script src="./script/axios.min.js"></script>
 <script src="./script/scratch-storage.js"></script>
 <script src="./script/scratch-audio.js"></script>
@@ -19,33 +30,12 @@
 
 <body>
     <!-- loading -->
-    <div id='j_page-loading' class='m-actloading' style='background-color:rgba(4, 18, 34, 1)'>
-        <div class='loading' style='color:rgba(255, 255, 255, 1)'>
-            <div class='bars'>
-                <span class='loading-bar b1' style='background-color:rgba(255, 255, 255, 1)'></span>
-                <span class='loading-bar b2' style='background-color:rgba(255, 255, 255, 1)'></span>
-                <span class='loading-bar b3' style='background-color:rgba(255, 255, 255, 1)'></span>
-                <span class='loading-bar b4' style='background-color:rgba(255, 255, 255, 1)'></span>
-                <span class='loading-bar b5' style='background-color:rgba(255, 255, 255, 1)'></span>
-                <span class='loading-bar b6' style='background-color:rgba(255, 255, 255, 1)'></span>
-                <span class='loading-bar b7' style='background-color:rgba(255, 255, 255, 1)'></span>
-            </div>
-            <span class='loading-tip'>loading<i class='dots d1'>.</i><i class='dots d2'>.</i><i class='dots d3'>.</i></span>
-        </div>
-    </div>
+    <div id="progress-loading" class="ldBar label-center" style="width: 100%; height: 60px;" data-preset="bubble"></div>
     <!-- canvas -->
     <canvas id="ocanvas"></canvas>
     <!-- render 引擎 -->
     <script src="./script/scratch-svg-renderer.js"></script>
     <script src="./script/scratch-render.js"></script>
-
-    <div id="debug-area">
-        <div id="detec">
-            <p id="J_detectRes"></p>
-            <p id="J_detectData"></p>
-            <p id="J_detectWH"></p>
-        </div>
-    </div>
 
     <script>
         "use strict";
@@ -54,27 +44,30 @@
         // const bridge = window['babyfs-jsbridge'].default;
         // bridge.callHandler('setScreenHoriz');
         // debug 开关
-        function switchDebug() {
-            const debugDom = document.getElementById('debug-area');
+        function switchDebug(cb) {
             if (window.__bbfs_scratch['debug']) {
-                debugDom.style.display = 'block';
-                const vConsole = new VConsole(); // debug vconsole init
-            } else {
-                debugDom.style.display = 'none';
+                cb && cb();
             }
         }
-        switchDebug();
-
+        switchDebug(function () {
+            new VConsole(); // debug vconsole init
+        });
         window.devicePixelRatio = 3;
         detectOrient(); // 监测屏幕方向
         window.onresize = debounce(detectOrient, 300);
-        const loading = document.getElementById('j_page-loading');
+        const bar1 = new ldBar("#progress-loading");
+        const bar2 = document.getElementById('progress-loading').ldBar;
+        const loading = document.getElementById('progress-loading');
+        const canvas = document.getElementById('ocanvas');
+        bar1.set(10);
         // loading显示隐藏开关切换
         function switchLoading(_sw) {
             if (_sw) {
                 loading.style.display = 'block';
+                canvas.style.display = 'none';
             } else {
                 loading.style.display = 'none';
+                canvas.style.display = 'block';
             }
         }
         // 切换项目前
@@ -89,9 +82,6 @@
             vm.greenFlag(); // 执行程序
         }
         switchLoading(true);
-        const canvas = document.getElementById('ocanvas');
-        const oSel = document.getElementById('select');
-        const oFile = document.getElementById('file');
         const dragThreshold = 3;
         const state = {
             mouseDown: false,
@@ -112,34 +102,47 @@
         vm.attachV2SVGAdapter(new ScratchSVGRenderer.SVGRenderer());
         vm.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
         vm.runtime.on('PROJECT_START', (e) => {
+            bar1.set(100);
             window.__bbfs_scratch['LOADED_PROJECT'] = +new Date();
             window.__bbfs_scratch['LOAD_PROJECT_DURATION'] = window.__bbfs_scratch['LOADED_PROJECT'] - window.__bbfs_scratch['LOAD_PROJECT'];
             window.__bbfs_scratch['WHOLE_DURATION'] = window.__bbfs_scratch['LOADED_PROJECT'] - window.__bbfs_scratch['LOAD'];
-            // WINDOW.LOAD
-            console.log('[LOAD]', window.__bbfs_scratch['LOAD']);
-            console.log('[UNLOAD]', window.__bbfs_scratch['UNLOAD']);
-            console.log('[LOAD_DURATION]', window.__bbfs_scratch['LOAD_DURATION']);
-            // PROJECT
-            console.log('[FETCH_SB3]', window.__bbfs_scratch['FETCH_SB3']);
-            console.log('[FETCHED_SB3]', window.__bbfs_scratch['FETCHED_SB3']);
-            console.log('[FETCH_SB3_DURATION]', window.__bbfs_scratch['FETCH_SB3_DURATION']);
-            // LOAD SB3
-            console.log('[LOAD_SB3]', window.__bbfs_scratch['LOAD_SB3']);
-            console.log('[LOADED_SB3]', window.__bbfs_scratch['LOADED_SB3']);
-            console.log('[LOAD_SB3_DURATION]', window.__bbfs_scratch['LOAD_SB3_DURATION']);
-            // PROJECT
-            console.log('[LOAD_PROJECT]', window.__bbfs_scratch['LOAD_PROJECT']);
-            console.log('[LOADED_PROJECT]', window.__bbfs_scratch['LOADED_PROJECT']);
-            console.log('[LOAD_PROJECT_DURATION]', window.__bbfs_scratch['LOAD_PROJECT_DURATION']);
-            // DURATION
-            window.__bbfs_scratch['LOAD_TO_FETCH_DURATION'] = window.__bbfs_scratch['FETCHED_SB3'] - window.__bbfs_scratch['LOAD'];
-            window.__bbfs_scratch['SCRIPT_START']
-            console.log('[LOAD_TO_FETCH_DURATION]', window.__bbfs_scratch['LOAD_TO_FETCH_DURATION']);
-            console.log('[WHOLE_DURATION]', window.__bbfs_scratch['WHOLE_DURATION']);
-            console.log('[SCRIPT_TO_PROJECT_DURATION]', window.__bbfs_scratch['SCRIPT_TO_PROJECT_DURATION']);
-            // console.log(window.performance);
-            // console.log('[MEMORY]', window.performance['memory']);
-            // console.log('[TIMING]', window.performance['timing']);
+
+            function showDebugInfo(){
+                // SCREEN
+                console.log('[clientWidth]', window.__bbfs_scratch['clientWidth']);
+                console.log('[clientHeight]', window.__bbfs_scratch['clientHeight']);
+                console.log('[screenWidth]', window.__bbfs_scratch['screenWidth']);
+                console.log('[screenHeight]', window.__bbfs_scratch['screenHeight']);
+                console.log('[canvasW]', window.__bbfs_scratch['canvasW']);
+                console.log('[canvasH]', window.__bbfs_scratch['canvasH']);
+                // WINDOW.LOAD
+                console.log('[LOAD]', window.__bbfs_scratch['LOAD']);
+                console.log('[UNLOAD]', window.__bbfs_scratch['UNLOAD']);
+                console.log('[LOAD_DURATION]', window.__bbfs_scratch['LOAD_DURATION']);
+                // PROJECT
+                console.log('[FETCH_SB3]', window.__bbfs_scratch['FETCH_SB3']);
+                console.log('[FETCHED_SB3]', window.__bbfs_scratch['FETCHED_SB3']);
+                console.log('[FETCH_SB3_DURATION]', window.__bbfs_scratch['FETCH_SB3_DURATION']);
+                // LOAD SB3
+                console.log('[LOAD_SB3]', window.__bbfs_scratch['LOAD_SB3']);
+                console.log('[LOADED_SB3]', window.__bbfs_scratch['LOADED_SB3']);
+                console.log('[LOAD_SB3_DURATION]', window.__bbfs_scratch['LOAD_SB3_DURATION']);
+                // PROJECT
+                console.log('[LOAD_PROJECT]', window.__bbfs_scratch['LOAD_PROJECT']);
+                console.log('[LOADED_PROJECT]', window.__bbfs_scratch['LOADED_PROJECT']);
+                console.log('[LOAD_PROJECT_DURATION]', window.__bbfs_scratch['LOAD_PROJECT_DURATION']);
+                // DURATION
+                window.__bbfs_scratch['LOAD_TO_FETCH_DURATION'] = window.__bbfs_scratch['FETCHED_SB3'] - window.__bbfs_scratch['LOAD'];
+                window.__bbfs_scratch['SCRIPT_START']
+                console.log('[LOAD_TO_FETCH_DURATION]', window.__bbfs_scratch['LOAD_TO_FETCH_DURATION']);
+                console.log('[WHOLE_DURATION]', window.__bbfs_scratch['WHOLE_DURATION']);
+                console.log('[SCRIPT_TO_PROJECT_DURATION]', window.__bbfs_scratch['SCRIPT_TO_PROJECT_DURATION']);
+                // console.log(window.performance);
+                // console.log('[MEMORY]', window.performance['memory']);
+                // console.log('[TIMING]', window.performance['timing']);
+            }
+
+            switchDebug(showDebugInfo);
         })
 
         // 绑定鼠标事件
@@ -316,7 +319,8 @@
         }
 
         // fetch scratch files(sb3)
-        function fetchScratchFile(path = getQueryString('file')) {
+        // function fetchScratchFile(path = getQueryString('file') || './sb3/canu_v.1.0.0.sb3') {
+        function fetchScratchFile(path = getQueryString('file') || './sb3/Icanhelp.sb3') {
             window.__bbfs_scratch['FETCH_SB3'] = +new Date();
             console.log('[current sb3 path is: ]', path);
             beforeSwitchProject();
@@ -327,6 +331,7 @@
                     console.log(res);
                     window.__bbfs_scratch['FETCHED_SB3'] = +new Date();
                     window.__bbfs_scratch['FETCH_SB3_DURATION'] = window.__bbfs_scratch['FETCHED_SB3'] - window.__bbfs_scratch['FETCH_SB3'];
+                    bar1.set(50);
                     readFromSb(res.data)
                 })
         }
