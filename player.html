@@ -19,7 +19,8 @@
     <link rel="stylesheet" href="./loading-bar/loading-bar.css">
 </head>
 
-<!-- <script src="./script/babyfsJsbridge.min.js"></script> -->
+<script src="./script/babyfsJsbridge.min.js"></script>
+<script src="./script/bridgeRegisterFunc.js"></script>
 <script src="./loading-bar/loading-bar.js"></script>
 <script src="./script/axios.min.js"></script>
 <script src="./script/scratch-storage.js"></script>
@@ -41,7 +42,7 @@
         "use strict";
         window.__bbfs_scratch = {}; // 适应业务的全局实例
         window.__bbfs_scratch['debug'] = true;
-        // const bridge = window['babyfs-jsbridge'].default;
+        const bridge = window['babyfs-jsbridge'].default;
         // bridge.callHandler('setScreenHoriz');
         // debug 开关
         function switchDebug(cb) {
@@ -107,7 +108,7 @@
             window.__bbfs_scratch['LOAD_PROJECT_DURATION'] = window.__bbfs_scratch['LOADED_PROJECT'] - window.__bbfs_scratch['LOAD_PROJECT'];
             window.__bbfs_scratch['WHOLE_DURATION'] = window.__bbfs_scratch['LOADED_PROJECT'] - window.__bbfs_scratch['LOAD'];
 
-            function showDebugInfo(){
+            function showDebugInfo() {
                 // SCREEN
                 console.log('[clientWidth]', window.__bbfs_scratch['clientWidth']);
                 console.log('[clientHeight]', window.__bbfs_scratch['clientHeight']);
@@ -144,6 +145,21 @@
 
             switchDebug(showDebugInfo);
         })
+        // 监听[jsbridge callhandler]的广播信息
+        vm.runtime.on('event_whenbroadcastreceived_shouldcalljsbridge', (e) => {
+            console.log(e);
+            if (e) {
+                if (e.name) {
+                    const eventName = e.name;
+                    bridge.callHandler(eventName);
+                }
+            }
+        })
+
+        // 注册[jsbridge registerhandler]的事件
+        function bridgeRegisterHandler() {
+            bridge.registerHandler('swipe', function (params) { swipe(params) })
+        }
 
         // 绑定鼠标事件
         function attachMouseEvents(canvas) {
@@ -319,8 +335,9 @@
         }
 
         // fetch scratch files(sb3)
+        function fetchScratchFile(path = getQueryString('file')) {
         // function fetchScratchFile(path = getQueryString('file') || './sb3/canu_v.1.0.0.sb3') {
-        function fetchScratchFile(path = getQueryString('file') || './sb3/Icanhelp.sb3') {
+        // function fetchScratchFile(path = getQueryString('file') || './sb3/Icanhelp.sb3') {
             window.__bbfs_scratch['FETCH_SB3'] = +new Date();
             console.log('[current sb3 path is: ]', path);
             beforeSwitchProject();
@@ -331,13 +348,14 @@
                     console.log(res);
                     window.__bbfs_scratch['FETCHED_SB3'] = +new Date();
                     window.__bbfs_scratch['FETCH_SB3_DURATION'] = window.__bbfs_scratch['FETCHED_SB3'] - window.__bbfs_scratch['FETCH_SB3'];
-                    bar1.set(50);
+                    bar1.set(60);
                     readFromSb(res.data)
                 })
         }
 
         window.addEventListener('load', function () {
             window.__bbfs_scratch['LOAD'] = +new Date();
+            bridgeRegisterHandler();
             attachMouseEvents(canvas);
             fetchScratchFile();
         })
