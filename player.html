@@ -104,6 +104,7 @@
         vm.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
         vm.runtime.on('PROJECT_START', (e) => {
             bar1.set(100);
+            bridge.callHandler('ready');
             window.__bbfs_scratch['LOADED_PROJECT'] = +new Date();
             window.__bbfs_scratch['LOAD_PROJECT_DURATION'] = window.__bbfs_scratch['LOADED_PROJECT'] - window.__bbfs_scratch['LOAD_PROJECT'];
             window.__bbfs_scratch['WHOLE_DURATION'] = window.__bbfs_scratch['LOADED_PROJECT'] - window.__bbfs_scratch['LOAD'];
