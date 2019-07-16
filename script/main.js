@@ -298,10 +298,10 @@ function readFromSb(targert) {
 }
 
 // fetch scratch files(sb3)
-// function fetchScratchFile(path = getQueryString('file')) {
+function fetchScratchFile(path = getQueryString('file')) {
 // function fetchScratchFile(path = getQueryString('file') || './sb3/canu_v.1.0.0.sb3') {
 // function fetchScratchFile(path = getQueryString('file') || './sb3/Icanhelp.sb3') {
-function fetchScratchFile(path = getQueryString('file') || './sb3/jsbridge.sb3') {
+// function fetchScratchFile(path = getQueryString('file') || './sb3/jsbridge.sb3') {
     window.__bbfs_scratch['FETCH_SB3'] = +new Date();
     console.log('[current sb3 path is: ]', path);
     beforeSwitchProject();
